@@ -21,7 +21,7 @@ import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const SubjectsList = () => {
-  const [searchQuery, setSetSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectDepartment, setSelectDepartment] = useState("all");
 
   const subjectColumns = useMemo<ColumnDef<Subject>[]>(
@@ -139,7 +139,7 @@ const SubjectsList = () => {
               placeholder="Search by name..."
               className="pl-10 w-full"
               value={searchQuery}
-              onChange={(e) => setSetSearchQuery(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
