@@ -1,5 +1,6 @@
 import { BACKEND_BASE_URL } from "@/constants";
 import { ListResponse } from "@/types";
+import { HttpError, ValidationErrors } from "@refinedev/core";
 import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 
 if (!BACKEND_BASE_URL) {
@@ -40,14 +41,41 @@ const options: CreateDataProviderOptions = {
     },
 
     mapResponse: async (response) => {
-      const payload: ListResponse = await response.json();
+      if (!response.ok) {
+        let errorData: {
+          message?: string;
+          error?: string;
+          errors?: ValidationErrors;
+        };
+        try {
+          errorData = await response.json();
+        } catch {
+          errorData = { message: response.statusText };
+        }
+        const error: HttpError = {
+          message:
+            errorData?.message ||
+            errorData?.error ||
+            response.statusText ||
+            "Request failed",
+          statusCode: response.status,
+          errors: errorData?.errors,
+        };
+        throw error;
+      }
+      const payload: ListResponse = await response.clone().json();
       return payload.data ?? [];
     },
 
     getTotalCount: async (response) => {
-      const payload: ListResponse = await response.json();
-
-      return payload.pagination?.total ?? payload.data?.length ?? 0;
+      if (!response.ok) return 0;
+      const payload: ListResponse = await response.clone().json();
+      // If response has pagination metadata, use total (or 0 if missing)
+      if (payload.pagination) {
+        return payload.pagination.total ?? 0;
+      }
+      // If unpaginated (e.g. raw full list), total count is the list length
+      return payload.data?.length ?? 0;
     },
   },
 };
