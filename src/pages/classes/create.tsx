@@ -29,6 +29,8 @@ import { MOCK_SUBJECTS } from "@/constants/mock-data";
 import { teachers } from "@/constants";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { ControllerRenderProps } from "react-hook-form";
+import { UploadWidgetValue } from "@/types";
 
 type FormArgs = z.infer<typeof classSchema>;
 
@@ -53,6 +55,25 @@ const ClassesCreate = () => {
   } = form;
 
   const bannerPublicId = form.watch("bannerCldPubId");
+
+  const setBannerImage = (
+    file: UploadWidgetValue | null,
+    field: ControllerRenderProps<FormArgs>,
+  ) => {
+    if (file) {
+      field.onChange(file.url);
+      form.setValue("bannerCldPubId", file.publicId, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    } else {
+      field.onChange("");
+      form.setValue("bannerCldPubId", "", {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+  };
 
   const onSubmit = async (value: FormArgs) => {};
   return (
@@ -93,21 +114,7 @@ const ClassesCreate = () => {
                                 }
                               : null
                           }
-                          onChange={(file) => {
-                            if (file) {
-                              field.onChange(file.url);
-                              form.setValue("bannerCldPubId", file.publicId, {
-                                shouldValidate: true,
-                                shouldDirty: true,
-                              });
-                            } else {
-                              field.onChange("");
-                              form.setValue("bannerCldPubId", "", {
-                                shouldValidate: true,
-                                shouldDirty: true,
-                              });
-                            }
-                          }}
+                          onChange={(file) => setBannerImage(file, field)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -222,7 +229,7 @@ const ClassesCreate = () => {
                               const value = e.target.value;
                               field.onChange(value ? Number(value) : undefined);
                             }}
-                            value={(field.value as number | undefined) ?? 0}
+                            value={(field.value as number | undefined) ?? ""}
                             name={field.name}
                             ref={field.ref}
                             onBlur={field.onBlur}

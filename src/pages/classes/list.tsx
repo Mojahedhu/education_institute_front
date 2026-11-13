@@ -7,8 +7,9 @@ import {
   SelectContent,
   SelectTrigger,
   SelectValue,
+  SelectItem,
 } from "@/components/ui/select";
-import { SelectItem } from "@radix-ui/react-select";
+
 import { Search } from "lucide-react";
 
 const ClassesList = () => {

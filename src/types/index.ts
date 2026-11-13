@@ -38,6 +38,7 @@ declare global {
   }
 
   interface CloudinaryWidget {
+    destroy(): unknown;
     open: () => void;
   }
 
