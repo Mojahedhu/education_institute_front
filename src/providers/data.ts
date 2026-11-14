@@ -9,6 +9,31 @@ if (!BACKEND_BASE_URL) {
   );
 }
 
+const buildHttpError = async (response: Response): Promise<HttpError> => {
+  let errorData: {
+    message?: string;
+    error?: string;
+    errors?: ValidationErrors;
+  };
+
+  try {
+    errorData = await response.json();
+  } catch (error) {
+    console.error(error);
+    errorData = { message: response.statusText };
+  }
+
+  return {
+    message:
+      errorData?.message ||
+      errorData?.error ||
+      response?.statusText ||
+      "Request failed",
+    statusCode: response.status,
+    errors: errorData?.errors,
+  };
+};
+
 const options: CreateDataProviderOptions = {
   getList: {
     getEndpoint: ({ resource }) => resource,
@@ -41,34 +66,36 @@ const options: CreateDataProviderOptions = {
     },
 
     mapResponse: async (response) => {
-      if (!response.ok) {
-        let errorData: {
-          message?: string;
-          error?: string;
-          errors?: ValidationErrors;
-        };
-        try {
-          errorData = await response.json();
-        } catch {
-          errorData = { message: response.statusText };
-        }
-        const error: HttpError = {
-          message:
-            errorData?.message ||
-            errorData?.error ||
-            response.statusText ||
-            "Request failed",
-          statusCode: response.status,
-          errors: errorData?.errors,
-        };
-        throw error;
-      }
+      // if (!response.ok) {
+      //   let errorData: {
+      //     message?: string;
+      //     error?: string;
+      //     errors?: ValidationErrors;
+      //   };
+      //   try {
+      //     errorData = await response.json();
+      //   } catch {
+      //     errorData = { message: response.statusText };
+      //   }
+      //   const error: HttpError = {
+      //     message:
+      //       errorData?.message ||
+      //       errorData?.error ||
+      //       response.statusText ||
+      //       "Request failed",
+      //     statusCode: response.status,
+      //     errors: errorData?.errors,
+      //   };
+      //   throw error;
+      // }
+      if (!response.ok) throw await buildHttpError(response);
       const payload: ListResponse = await response.clone().json();
       return payload.data ?? [];
     },
 
     getTotalCount: async (response) => {
       if (!response.ok) return 0;
+      // if (!response.ok) throw await buildHttpError(response);
       const payload: ListResponse = await response.clone().json();
       // If response has pagination metadata, use total (or 0 if missing)
       if (payload.pagination) {
