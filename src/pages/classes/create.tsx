@@ -35,7 +35,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -563,7 +563,18 @@ const ClassesCreate = () => {
                   className="w-full"
                   disabled={isSubmitting}
                 >
-                  <div>Create Class</div>
+                  <div className="flex gap-2">
+                    {" "}
+                    {!isSubmitting ? (
+                      <>
+                        <Plus /> Create Class
+                      </>
+                    ) : (
+                      <>
+                        <Loader2 className="animate-spin" /> Generating...
+                      </>
+                    )}
+                  </div>
                 </Button>
               </form>
             </Form>
