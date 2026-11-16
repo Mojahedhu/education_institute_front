@@ -1,5 +1,5 @@
 import { BACKEND_BASE_URL } from "@/constants";
-import { ListResponse } from "@/types";
+import { CreateResponse, ListResponse } from "@/types";
 import { HttpError, ValidationErrors } from "@refinedev/core";
 import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 
@@ -20,7 +20,7 @@ const buildHttpError = async (response: Response): Promise<HttpError> => {
     errorData = await response.json();
   } catch (error) {
     console.error(error);
-    errorData = { message: response.statusText };
+    errorData = { message: `${response.statusText}` };
   }
 
   return {
@@ -60,6 +60,11 @@ const options: CreateDataProviderOptions = {
         if (resource === "subjects") {
           if (field === "department") params.department = value;
           if (field === "name" || field === "code") params.search = value;
+        }
+
+        if (resource === "users") {
+          if (field === "role") params.role = value;
+          if (field === "name" || field === "email") params.search = value;
         }
       });
       return params;
@@ -103,6 +108,16 @@ const options: CreateDataProviderOptions = {
       }
       // If unpaginated (e.g. raw full list), total count is the list length
       return payload.data?.length ?? 0;
+    },
+  },
+  create: {
+    getEndpoint: ({ resource }) => resource,
+
+    buildBodyParams: async ({ variables }) => variables,
+
+    mapResponse: async (response) => {
+      const json: CreateResponse = await response.json();
+      return json.data ?? {};
     },
   },
 };

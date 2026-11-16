@@ -1,4 +1,4 @@
-import { useBack } from "@refinedev/core";
+import { useBack, useSelect } from "@refinedev/core";
 import z from "zod";
 
 import { useForm } from "@refinedev/react-hook-form";
@@ -25,16 +25,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MOCK_SUBJECTS } from "@/constants/mock-data";
-import { teachers } from "@/constants";
+
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ControllerRenderProps } from "react-hook-form";
-import { UploadWidgetValue } from "@/types";
+import { Subject, UploadWidgetValue, User } from "@/types";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "cmdk";
+import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 type FormArgs = z.infer<typeof classSchema>;
 
 const ClassesCreate = () => {
+  const [subjectOpen, setSubjectOpen] = useState(false);
+  const [teacherOpen, setTeacherOpen] = useState(false);
   const back = useBack();
 
   const form = useForm({
@@ -49,8 +66,9 @@ const ClassesCreate = () => {
   });
 
   const {
+    refineCore: { onFinish },
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
   } = form;
 
@@ -75,7 +93,94 @@ const ClassesCreate = () => {
     }
   };
 
-  const onSubmit = async (value: FormArgs) => {};
+  const onSubmit = async (value: FormArgs) => {
+    try {
+      await onFinish(value);
+    } catch (error) {
+      console.error("Error creating class:", error);
+    }
+  };
+
+  // Fetch subjects list
+  // const { query: subjectsQuery } = useList<Subject>({
+  //   resource: "subjects",
+  //   pagination: {
+  //     pageSize: 100,
+  //   },
+  // });
+
+  // Fetch teacher list
+  // const { query: teachersQuery } = useList<User>({
+  //   resource: "users",
+  //   filters: [
+  //     {
+  //       field: "role",
+  //       operator: "eq",
+  //       value: "teacher",
+  //     },
+  //   ],
+  //   pagination: {
+  //     pageSize: 100,
+  //   },
+  // });
+
+  // Subjects dropdown options
+  const {
+    options: subjectOptions,
+    query: subjectsQuery,
+    onSearch: onSearchSubjects,
+  } = useSelect<Subject>({
+    resource: "subjects",
+    optionLabel: "name",
+    optionValue: "id",
+    debounce: 300,
+    pagination: {
+      mode: "off", // or customize page limits
+    },
+    onSearch: (value) => [
+      {
+        field: "name",
+        operator: "contains",
+        value,
+      },
+    ],
+  });
+
+  // Teachers dropdown options
+  const {
+    options: teacherOptions,
+    query: teachersQuery,
+    onSearch: onSearchTeachers,
+  } = useSelect<User>({
+    resource: "users",
+    optionLabel: "name",
+    optionValue: "id",
+    debounce: 300,
+    filters: [
+      {
+        field: "role",
+        operator: "eq",
+        value: "teacher",
+      },
+    ],
+    pagination: {
+      mode: "off",
+    },
+    onSearch: (value) => [
+      {
+        field: "name",
+        operator: "contains",
+        value,
+      },
+    ],
+  });
+
+  const teachers = teachersQuery.data?.data || [];
+  // const teacherIsLoading = teachersQuery.isLoading;
+
+  const subjects = subjectsQuery.data?.data || [];
+  // const subjectIsLoading = subjectsQuery.isLoading;
+
   return (
     <CreateView className="class-view">
       <Breadcrumb />
@@ -147,7 +252,7 @@ const ClassesCreate = () => {
                 />
 
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <FormField
+                  {/* <FormField
                     control={control}
                     name="subjectId"
                     render={({ field }) => (
@@ -159,7 +264,7 @@ const ClassesCreate = () => {
                         <Select
                           value={field.value?.toString()}
                           onValueChange={(val) => field.onChange(Number(val))}
-                          // disabled={subject}
+                          disabled={subjectsQuery.isLoading}
                         >
                           <FormControl>
                             <SelectTrigger className="w-full">
@@ -167,19 +272,100 @@ const ClassesCreate = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {MOCK_SUBJECTS.map(({ id, code, name }) => (
+                            {subjects.map(({ id, name, code }) => (
                               <SelectItem key={id} value={id.toString()}>
                                 {name} {code}
                               </SelectItem>
                             ))}
+                            {
+                              // {subjects.map(({ id, code, name }) => (
+                              //   <SelectItem key={id} value={id.toString()}>
+                              //     {name} {code}
+                              //   </SelectItem>
+                              // ))}
+                            }
                           </SelectContent>
                         </Select>
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
 
                   <FormField
+                    control={control}
+                    name="subjectId"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Subject</FormLabel>
+                        <Popover
+                          open={subjectOpen}
+                          onOpenChange={setSubjectOpen}
+                        >
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                  "w-full justify-between font-normal",
+                                  !field.value && "text-muted-foreground",
+                                )}
+                                disabled={subjectsQuery.isLoading}
+                              >
+                                {field.value
+                                  ? subjectOptions.find(
+                                      (opt) => opt.value === field.value,
+                                    )?.label
+                                  : "Select subject"}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                            <Command shouldFilter={false}>
+                              {" "}
+                              {/* shouldFilter={false} lets Refine/server handle the filtering */}
+                              <CommandInput
+                                placeholder="Search subject..."
+                                onValueChange={onSearchSubjects}
+                              />
+                              <CommandList>
+                                <CommandEmpty className="text-center">
+                                  No subject found.
+                                </CommandEmpty>
+                                <CommandGroup>
+                                  {subjects.map(({ id, name, code }) => (
+                                    <CommandItem
+                                      key={id}
+                                      value={id.toString()}
+                                      className="flex gap-2 cursor-pointer items-center w-full"
+                                      onSelect={() => {
+                                        field.onChange(Number(id));
+                                        setSubjectOpen(false);
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          id === field.value
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {name} ({code})
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* <FormField
                     control={control}
                     name="teacherId"
                     render={({ field }) => (
@@ -191,6 +377,7 @@ const ClassesCreate = () => {
                         <Select
                           value={field.value?.toString()}
                           onValueChange={field.onChange}
+                          disabled={teachersQuery.isLoading}
                         >
                           <FormControl>
                             <SelectTrigger className="w-full">
@@ -198,13 +385,93 @@ const ClassesCreate = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {teachers.map(({ id, name }) => (
-                              <SelectItem key={id} value={id}>
-                                {name}
+                            {teacherOptions.map(({ label, value }) => (
+                              <SelectItem key={value} value={value}>
+                                {label}
                               </SelectItem>
                             ))}
+                            {
+                            //  {teachers.map(({ id, name }) => (
+                            //   <SelectItem key={id} value={id}>
+                            //     {name}
+                            //   </SelectItem>
+                            // ))} 
+                            }
                           </SelectContent>
                         </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  /> */}
+                  <FormField
+                    control={control}
+                    name="teacherId"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Teacher</FormLabel>
+                        <Popover
+                          open={teacherOpen}
+                          onOpenChange={setTeacherOpen}
+                        >
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                className={cn(
+                                  "w-full justify-between font-normal",
+                                  !field.value && "text-muted-foreground",
+                                )}
+                                disabled={teachersQuery.isLoading}
+                              >
+                                {field.value
+                                  ? teacherOptions.find(
+                                      (opt) => opt.value === field.value,
+                                    )?.label
+                                  : "Select teacher"}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                            <Command shouldFilter={false}>
+                              {" "}
+                              {/* shouldFilter={false} lets Refine/server handle the filtering */}
+                              <CommandInput
+                                placeholder="Search teacher..."
+                                onValueChange={onSearchTeachers}
+                              />
+                              <CommandList>
+                                <CommandEmpty className="text-center">
+                                  No teacher found.
+                                </CommandEmpty>
+                                <CommandGroup>
+                                  {teachers.map(({ id, name }) => (
+                                    <CommandItem
+                                      className="flex gap-2 cursor-pointer items-center w-full"
+                                      key={id.toString()}
+                                      value={name}
+                                      onSelect={() => {
+                                        field.onChange(id);
+                                        setTeacherOpen(false);
+                                      }}
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          id === field.value
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {name}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -290,7 +557,12 @@ const ClassesCreate = () => {
 
                 <Separator />
 
-                <Button type="submit" size={"lg"} className="w-full">
+                <Button
+                  type="submit"
+                  size={"lg"}
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
                   <div>Create Class</div>
                 </Button>
               </form>
