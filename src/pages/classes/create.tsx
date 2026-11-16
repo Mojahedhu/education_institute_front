@@ -1,4 +1,4 @@
-import { useBack } from "@refinedev/core";
+import { useBack, useList } from "@refinedev/core";
 import z from "zod";
 
 import { useForm } from "@refinedev/react-hook-form";
@@ -25,12 +25,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MOCK_SUBJECTS } from "@/constants/mock-data";
-import { teachers } from "@/constants";
+
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ControllerRenderProps } from "react-hook-form";
-import { UploadWidgetValue } from "@/types";
+import { Subject, UploadWidgetValue, User } from "@/types";
 
 type FormArgs = z.infer<typeof classSchema>;
 
@@ -49,6 +48,7 @@ const ClassesCreate = () => {
   });
 
   const {
+    refineCore: { onFinish },
     control,
     formState: { errors },
     handleSubmit,
@@ -75,7 +75,43 @@ const ClassesCreate = () => {
     }
   };
 
-  const onSubmit = async (value: FormArgs) => {};
+  const onSubmit = async (value: FormArgs) => {
+    try {
+      await onFinish(value);
+    } catch (error) {
+      console.error("Error creating class:", error);
+    }
+  };
+
+  // Fetch subjects list
+  const { query: subjectsQuery } = useList<Subject>({
+    resource: "subjects",
+    pagination: {
+      pageSize: 100,
+    },
+  });
+
+  // Fetch teacher list
+  const { query: teachersQuery } = useList<User>({
+    resource: "users",
+    filters: [
+      {
+        field: "role",
+        operator: "eq",
+        value: "teacher",
+      },
+    ],
+    pagination: {
+      pageSize: 100,
+    },
+  });
+
+  const teachers = teachersQuery.data?.data || [];
+  const teacherIsLoading = teachersQuery.isLoading;
+
+  const subjects = subjectsQuery.data?.data || [];
+  const subjectIsLoading = subjectsQuery.isLoading;
+
   return (
     <CreateView className="class-view">
       <Breadcrumb />
@@ -159,7 +195,7 @@ const ClassesCreate = () => {
                         <Select
                           value={field.value?.toString()}
                           onValueChange={(val) => field.onChange(Number(val))}
-                          // disabled={subject}
+                          disabled={subjectIsLoading}
                         >
                           <FormControl>
                             <SelectTrigger className="w-full">
@@ -167,7 +203,7 @@ const ClassesCreate = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {MOCK_SUBJECTS.map(({ id, code, name }) => (
+                            {subjects.map(({ id, code, name }) => (
                               <SelectItem key={id} value={id.toString()}>
                                 {name} {code}
                               </SelectItem>
@@ -191,6 +227,7 @@ const ClassesCreate = () => {
                         <Select
                           value={field.value?.toString()}
                           onValueChange={field.onChange}
+                          disabled={teacherIsLoading}
                         >
                           <FormControl>
                             <SelectTrigger className="w-full">
