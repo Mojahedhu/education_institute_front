@@ -27,7 +27,7 @@ import {
 } from "cmdk";
 
 import { Check, ChevronDown, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const ClassesList = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -245,7 +245,12 @@ const ClassesList = () => {
       },
     },
   });
-  console.log(subjectOptions);
+
+  useEffect(() => {
+    classesTable.refineCore.setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSubject, selectedTeacher, searchQuery]);
+
   return (
     <ListView>
       <Breadcrumb />
@@ -295,7 +300,10 @@ const ClassesList = () => {
                           (opt) =>
                             String(opt.label).toLowerCase() ===
                             String(selectedSubject).toLowerCase(),
-                        )?.label || "All Subjects"}
+                        )?.label ||
+                        (selectedSubject === "all"
+                          ? "All Subjects"
+                          : selectedSubject)}
                   </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -306,6 +314,7 @@ const ClassesList = () => {
                   {" "}
                   {/* shouldFilter={false} lets Refine/server handle the filtering */}
                   <CommandInput
+                    value={subjectSearch}
                     placeholder="Search subjects..."
                     onValueChange={(val) => {
                       onSearchSubjects(val);
@@ -395,7 +404,10 @@ const ClassesList = () => {
                           (opt) =>
                             String(opt.label).toLowerCase() ===
                             String(selectedTeacher).toLowerCase(),
-                        )?.label || "All Teachers"}
+                        )?.label ||
+                        (selectedTeacher === "all"
+                          ? "All Teachers"
+                          : selectedTeacher)}
                   </span>
                   <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -407,6 +419,7 @@ const ClassesList = () => {
                   {/* shouldFilter={false} lets Refine/server handle the filtering */}
                   <CommandInput
                     placeholder="Search Teachers..."
+                    value={teacherSearch}
                     onValueChange={(val) => {
                       onSearchTeachers(val);
                       setTeacherSearch(val);
