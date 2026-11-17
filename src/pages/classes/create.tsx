@@ -187,7 +187,7 @@ const ClassesCreate = () => {
       <h1>Create a class</h1>
       <div className="intro-row">
         <p>Provide the required information below to add a class.</p>
-        <button onClick={back}>Go Back</button>
+        <Button onClick={back}>Go Back</Button>
       </div>
       <Separator />
       <div className="my-4 flex items-center">
@@ -338,7 +338,7 @@ const ClassesCreate = () => {
                                     <CommandItem
                                       key={id}
                                       value={id.toString()}
-                                      className="flex gap-2 cursor-pointer items-center w-full"
+                                      className="flex gap-2 cursor-pointer items-center w-full hover:bg-accent hover:text-accent-foreground"
                                       onSelect={() => {
                                         field.onChange(Number(id));
                                         setSubjectOpen(false);
@@ -448,7 +448,7 @@ const ClassesCreate = () => {
                                 <CommandGroup>
                                   {teachers.map(({ id, name }) => (
                                     <CommandItem
-                                      className="flex gap-2 cursor-pointer items-center w-full"
+                                      className="flex gap-2 cursor-pointer items-center w-full hover:bg-accent hover:text-accent-foreground"
                                       key={id.toString()}
                                       value={name}
                                       onSelect={() => {
