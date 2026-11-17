@@ -113,6 +113,17 @@ export type ClassDetails = {
   inviteCode?: string;
 };
 
+export type ClassListItem = Omit<
+  ClassDetails,
+  | "inviteCode"
+  | "schedules"
+  | "department"
+  | "bannerCldPubId"
+  | "courseCode"
+  | "courseName"
+  | "description"
+>;
+
 export type SignUpPayload = {
   email: string;
   name: string;
