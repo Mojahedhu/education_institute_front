@@ -28,7 +28,7 @@ import "./App.css";
 import Dashboard from "./pages/dashboard";
 import { BookOpen, GraduationCap, Home } from "lucide-react";
 import { SubjectCreate, SubjectsList } from "./pages/subjects";
-import { ClassesCreate, ClassesList } from "./pages/classes";
+import { ClassesCreate, ClassesList, ClassesShow } from "./pages/classes";
 
 function App() {
   return (
@@ -64,6 +64,7 @@ function App() {
                   name: "classes",
                   list: "/classes",
                   create: "classes/create",
+                  show: "classes/:id",
                   meta: {
                     label: "Classes",
                     icon: <GraduationCap />,
@@ -87,6 +88,7 @@ function App() {
                   <Route path="/classes">
                     <Route index element={<ClassesList />} />
                     <Route path="/classes/create" element={<ClassesCreate />} />
+                    <Route path="/classes/:id" element={<ClassesShow />} />
                   </Route>
                 </Route>
               </Routes>

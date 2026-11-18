@@ -52,7 +52,7 @@ const ClassesList = () => {
             <img
               src={bannerUrl}
               alt="Class banner"
-              className="ml-1 w-10 h-10 rounded-md object-cover"
+              className="ml-2 w-10 h-10 rounded-md object-cover"
               loading="lazy"
             />
           ) : (

@@ -124,6 +124,8 @@ export type ClassListItem = Omit<
   | "description"
 >;
 
+export type ClassUser = Pick<User, "id" | "name" | "email" | "role" | "image">;
+
 export type SignUpPayload = {
   email: string;
   name: string;
