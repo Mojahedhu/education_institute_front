@@ -9,7 +9,7 @@ import { ClassDetails, ClassUser } from "@/types";
 import { useShow } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router";
 import { AdvancedImage } from "@cloudinary/react";
 import { bannerPhoto } from "@/lib/cloudinary";
@@ -19,20 +19,40 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 
 const ClassesShow = () => {
+  // const [imgError, setImgError] = useState(false);
+  // const [theme, setTheme] = useState<"dark" | "light">("dark");
   const { id } = useParams();
   const classId = id ?? "";
 
   const { query } = useShow<ClassDetails>({ resource: "classes" });
 
   const classDetails = query.data?.data;
-  const theme = useRef<"dark" | "light">("dark");
-  useEffect(() => {
-    if (classDetails?.bannerUrl) {
-      (async () => {
-        theme.current = await getImageBrightness(classDetails?.bannerUrl || "");
-      })();
-    }
-  }, [classDetails?.bannerUrl]);
+
+  // useEffect(() => {
+  //   if (classDetails?.bannerUrl) {
+  //     let isMount = true;
+  //     (async () => {
+  //       try {
+  //         const returnTheme = await getImageBrightness(
+  //           classDetails?.bannerUrl || "",
+  //         );
+  //         if (isMount) {
+  //           setTheme(returnTheme);
+  //           setImgError(false);
+  //         }
+  //       } catch (error) {
+  //         console.log("Resolve image color error:", error);
+  //         if (isMount) {
+  //           setImgError(true);
+  //         }
+  //       }
+  //     })();
+
+  //     return () => {
+  //       isMount = false;
+  //     };
+  //   }
+  // }, [classDetails?.bannerUrl]);
 
   const studentColumns = useMemo<ColumnDef<ClassUser>[]>(
     () => [
@@ -121,19 +141,16 @@ const ClassesShow = () => {
       <ShowViewHeader resource="classes" title="Classes Details" />
 
       <div className="banner">
-        {bannerUrl ? (
-          bannerUrl.includes("res.cloudinary.com") && bannerCldPubId ? (
-            <AdvancedImage
-              cldImg={bannerPhoto(
-                bannerCldPubId ?? "",
-                name,
-                theme.current === "light",
-              )}
-              alt="Class Banner"
-            />
-          ) : (
-            <img src={bannerUrl} alt={name} loading="lazy" />
-          )
+        {bannerUrl &&
+        // !imgError &&
+        bannerUrl.includes("res.cloudinary.com") &&
+        bannerCldPubId ? (
+          <AdvancedImage
+            cldImg={bannerPhoto(bannerCldPubId ?? "", name)}
+            alt="Class Banner"
+          />
+        ) : bannerUrl ? (
+          <img src={bannerUrl} alt={name} loading="lazy" />
         ) : (
           <div className="placeholder" />
         )}

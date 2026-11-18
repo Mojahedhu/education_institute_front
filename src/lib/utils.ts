@@ -5,32 +5,26 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Helper to safely get the first full Unicode code point/character
+const getFirstCodePoint = (str: string) =>
+  (Array.from(str)[0] ?? "").toUpperCase();
+
 export const getInitials = (
   name: string,
   position: "first" | "full" = "full",
 ) => {
-  if (!name) return "";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "";
   if (position === "first") {
-    return name
-      .trim()
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((n) => n[0]?.toUpperCase())
-      .join("");
-  }
-  const parts = name.trim().split(" ");
-
-  if (parts.length === 0) {
-    return "";
+    return parts.slice(0, 2).map(getFirstCodePoint).join("");
   }
 
   if (parts.length === 1) {
-    return parts[0][0].toUpperCase();
+    return getFirstCodePoint(parts[0]);
   }
 
-  const firstInitial = parts[0][0].toUpperCase();
-  const lastInitial = parts[parts.length - 1][0].toUpperCase();
+  const firstInitial = getFirstCodePoint(parts[0]);
+  const lastInitial = getFirstCodePoint(parts[parts.length - 1]);
 
   return `${firstInitial}${lastInitial}`;
 };
@@ -46,8 +40,8 @@ export async function getImageBrightness(
 
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
+      canvas.width = 1;
+      canvas.height = 1;
       const ctx = canvas.getContext("2d");
       if (!ctx) return resolve("dark");
 

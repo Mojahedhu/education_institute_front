@@ -6,7 +6,7 @@ import { Cloudinary } from "@cloudinary/url-gen";
 import { Position } from "@cloudinary/url-gen/qualifiers/position";
 import { compass } from "@cloudinary/url-gen/qualifiers/gravity";
 import { text } from "@cloudinary/url-gen/qualifiers/source";
-import { TextStyle } from "@cloudinary/url-gen/qualifiers/TextStyle";
+import { TextStyle } from "@cloudinary/url-gen/qualifiers/textStyle";
 
 // Cloudinary instance
 const cld = new Cloudinary({
@@ -18,9 +18,21 @@ const cld = new Cloudinary({
 export const bannerPhoto = (
   imageCldPubId: string,
   name: string,
-  isLight: boolean,
+  // isLight?: boolean,
 ) => {
-  const textColor = isLight ? "#0f172a" : "#ffffff";
+  // Strip characters outside standard alphanumeric / common punctuation
+  const sanitizedText = name.replace(/[^\p{L}\p{N}\s.,'-]/gu, "").trim();
+  const img = cld
+    .image(imageCldPubId)
+    .resize(fill().width(1200).height(297))
+    .delivery(format("auto"))
+    .delivery(dpr("auto"));
+
+  if (!sanitizedText) {
+    return img;
+  }
+
+  // const textColor = isLight ? "#0f172a" : "#ffffff";
   return (
     cld
       .image(imageCldPubId)
@@ -33,9 +45,9 @@ export const bannerPhoto = (
       // Text overlay with name
       .overlay(
         source(
-          text(name, new TextStyle("roboto", 42).fontWeight("bold")).textColor(
-            textColor,
-          ),
+          text(name, new TextStyle("roboto", 42).fontWeight("bold"))
+            .textColor("#ffffff")
+            .backgroundColor("#00000050"),
         ).position(
           new Position()
             .gravity(compass("south_west"))
