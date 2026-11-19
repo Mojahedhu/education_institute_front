@@ -277,14 +277,14 @@
     }
 
     .footer {
-      @apply w-full text-center text-sm px-0;
+      @apply w-full text-center text-sm px-0 justify-center;
 
       span {
         @apply text-muted-foreground mr-2;
       }
 
       a {
-        @apply font-semibold underline;
+        @apply font-semibold underline text-primary;
       }
     }
   }
