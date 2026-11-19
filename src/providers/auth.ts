@@ -10,8 +10,31 @@ export const authProvider: AuthProvider = {
     role,
     image,
     imageCldPubId,
+    providerName,
   }: SignUpPayload) => {
     try {
+      // 1- Social provider Registration / Sign-up (Google / GitHub)
+      if (providerName) {
+        const { error } = await authClient.signIn.social({
+          provider: providerName as "google" | "github",
+          callbackURL: "/",
+        });
+        if (error) {
+          console.error(error.message);
+          return {
+            success: false,
+            error: {
+              name: `${providerName} registration failed`,
+              message: `Unable to register with ${providerName}`,
+            },
+          };
+        }
+        return {
+          success: true,
+        };
+      }
+
+      // 2. Email / Password Registration (Existing Flow)
       const { data, error } = await authClient.signUp.email({
         name,
         email,
@@ -19,15 +42,15 @@ export const authProvider: AuthProvider = {
         image,
         role,
         imageCldPubId,
-      } as SignUpPayload);
+      });
 
       if (error) {
+        console.error(error?.message);
         return {
           success: false,
           error: {
             name: "Registration failed",
-            message:
-              error?.message || "Unable to create account. Please try again.",
+            message: "Unable to create account. Please try again.",
           },
         };
       }
@@ -51,8 +74,31 @@ export const authProvider: AuthProvider = {
     }
   },
 
-  login: async ({ email, password }) => {
+  login: async ({ email, password, providerName }) => {
     try {
+      // Social Login
+
+      if (providerName) {
+        const { error } = await authClient.signIn.social({
+          provider: providerName as "google" | "github",
+          callbackURL: "/",
+        });
+        if (error) {
+          console.error(error.message);
+          return {
+            success: false,
+            error: {
+              name: "Login failed",
+              message: `Unable to sign in with ${providerName}`,
+            },
+          };
+        }
+        return {
+          success: true,
+        };
+      }
+
+      // Email login
       const { data, error } = await authClient.signIn.email({
         email,
         password,
@@ -64,7 +110,7 @@ export const authProvider: AuthProvider = {
           success: false,
           error: {
             name: "Login failed",
-            message: error?.message || "Please try again later.",
+            message: "Failed to login, please try again later.",
           },
         };
       }
@@ -108,7 +154,11 @@ export const authProvider: AuthProvider = {
     };
   },
   onError: async (error) => {
-    if (error.response?.status === "401") {
+    if (
+      error.response?.status === "401" ||
+      error?.status === "401" ||
+      error?.statusCode === "401"
+    ) {
       return {
         logout: true,
       };
@@ -117,6 +167,45 @@ export const authProvider: AuthProvider = {
     return { error };
   },
   check: async () => {
+    // The basic code
+    // try {
+    //   // 1. Validate session with the backend via better-auth client
+    //   const { data, error } = await authClient.getSession();
+    //   if (error || !data?.session) {
+    //     // Clear stale local storage if session is invalid or expired
+    //     localStorage.removeItem("user");
+    //     return {
+    //       authenticated: false,
+    //       logout: true,
+    //       redirectTo: "/login",
+    //       error: {
+    //         name: "Unauthorized",
+    //         message: error?.message || "Session expired or invalid",
+    //       },
+    //     };
+    //   }
+    //   // 2. Keep local user in sync with the session user if present
+    //   if (data.user) {
+    //     localStorage.setItem("user", JSON.stringify(data.user));
+    //   }
+    //   return {
+    //     authenticated: true,
+    //   };
+    // } catch (err) {
+    //   console.error("Check server auth error:", err);
+    //   localStorage.removeItem("user");
+    //   return {
+    //     authenticated: false,
+    //     logout: true,
+    //     redirectTo: "/login",
+    //     error: {
+    //       name: "Unauthorized",
+    //       message: "Failed to validate session",
+    //     },
+    //   };
+    // }
+
+    // Temp code for development
     const user = localStorage.getItem("user");
 
     if (user) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRegister, useRefineOptions, useLink } from "@refinedev/core";
+import { useRegister, useLink } from "@refinedev/core";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -37,8 +37,6 @@ import { GitHub, Google } from "@/lib/svg-icons";
 export const SignUpForm = () => {
   const Link = useLink();
 
-  const { title } = useRefineOptions();
-
   const { mutate: register, isPending: isRegistering } = useRegister();
 
   const form = useForm<RegisterFormValues>({
@@ -55,7 +53,7 @@ export const SignUpForm = () => {
 
   const {
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
     control,
   } = form;
 

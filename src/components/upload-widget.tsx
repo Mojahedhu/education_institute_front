@@ -147,6 +147,7 @@ const UploadWidget = ({
       ) : (
         <button
           className="upload-dropzone"
+          type="button"
           role="button"
           disabled={!canOpen}
           aria-busy={status === "loading"}
