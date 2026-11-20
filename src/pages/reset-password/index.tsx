@@ -34,6 +34,7 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const Link = useLink();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTokenInvalid, setIsTokenInvalid] = useState(false);
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
@@ -57,6 +58,17 @@ const ResetPassword = () => {
       });
       if (error) {
         console.error(error.message);
+
+        // Detect expired or invalid token errors from Better Auth
+        const isExpiredOrInvalid =
+          error.status === 400 ||
+          error.status === 401 ||
+          /token|expired|invalid/i.test(error.message || "");
+        if (isExpiredOrInvalid) {
+          setIsTokenInvalid(true);
+          return;
+        }
+
         toast.error("Failed to reset password. Please try again.");
         return;
       }
@@ -73,7 +85,7 @@ const ResetPassword = () => {
   };
 
   // If token is missing or error param exists
-  if (!token || errorParam) {
+  if (!token || errorParam || isTokenInvalid) {
     return (
       <div className="flex flex-col items-center justify-center px-6 py-8 min-h-svh">
         <Card className="sm:w-114 p-6 text-center">
@@ -124,6 +136,7 @@ const ResetPassword = () => {
                       <InputPassword
                         {...field}
                         placeholder="Enter new password"
+                        autoComplete="new-password"
                       />
                     </FormControl>
                     <FormMessage />
@@ -140,6 +153,7 @@ const ResetPassword = () => {
                       <InputPassword
                         {...field}
                         placeholder="Confirm new password"
+                        autoComplete="new-password"
                       />
                     </FormControl>
                     <FormMessage />
