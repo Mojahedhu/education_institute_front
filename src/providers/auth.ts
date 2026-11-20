@@ -284,4 +284,27 @@ export const authProvider: AuthProvider = {
       };
     }
   },
+  updatePassword: async ({
+    password,
+    token,
+  }: {
+    password: string;
+    token: string;
+  }) => {
+    const { error } = await authClient.resetPassword({
+      newPassword: password,
+      token,
+    });
+    if (error) {
+      console.error(error.message);
+      return {
+        success: false,
+        error: {
+          name: "Reset failed",
+          message: "Failed to reset password",
+        },
+      };
+    }
+    return { success: true, redirectTo: "/login" };
+  },
 };
