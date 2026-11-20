@@ -252,7 +252,7 @@ export const authProvider: AuthProvider = {
     try {
       const { error } = await authClient.requestPasswordReset({
         email,
-        redirectTo: "/reset-password", // URL where the user will be redirected to enter a new password
+        redirectTo: `${window.location.origin}/reset-password`, // Frontend page where the user sets a new password
       });
 
       if (error) {

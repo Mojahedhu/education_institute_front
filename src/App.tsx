@@ -86,8 +86,10 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
                 </Route>
+
+                {/* Accessible whether authenticated or not */}
+                <Route path="/reset-password" element={<ResetPassword />} />
 
                 <Route
                   element={
