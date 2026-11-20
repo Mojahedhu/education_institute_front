@@ -133,4 +133,5 @@ export type SignUpPayload = {
   image?: string;
   imageCldPubId?: string;
   role: UserRole;
+  providerName?: string;
 };

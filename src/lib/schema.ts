@@ -1,5 +1,27 @@
+import { UserRole } from "@/types";
 import * as z from "zod";
 
+// Auth schemas
+export const registerSchema = z
+  .object({
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirmPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+    name: z.string().min(3, "Full name must be at least 3 characters"),
+    role: z.nativeEnum(UserRole),
+    image: z.string().optional(),
+    imageCldPubId: z.string().optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "password don't match",
+    path: ["confirmPassword"],
+  });
+
+export type RegisterFormValues = z.infer<typeof registerSchema>;
+
+// App schemas
 export const facultySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
