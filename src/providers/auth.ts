@@ -248,4 +248,40 @@ export const authProvider: AuthProvider = {
       imageCldPubId: parsedUser.imageCldPubId,
     };
   },
+  forgotPassword: async ({ email }: { email: string }) => {
+    try {
+      const { error } = await authClient.requestPasswordReset({
+        email,
+        redirectTo: "/reset-password", // URL where the user will be redirected to enter a new password
+      });
+
+      if (error) {
+        return {
+          success: false,
+          error: {
+            name: "Forgot password failed",
+            message:
+              error.message || "Failed to send reset email. Please try again.",
+          },
+        };
+      }
+
+      return {
+        success: true,
+        successNotification: {
+          message: "Check your email for a password reset link.",
+          description: "Success",
+        },
+      };
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      return {
+        success: false,
+        error: {
+          name: "Forgot password failed",
+          message: "Unable to process request. Please try again.",
+        },
+      };
+    }
+  },
 };

@@ -30,6 +30,7 @@ import { BookOpen, GraduationCap, Home } from "lucide-react";
 import { SubjectCreate, SubjectsList } from "./pages/subjects";
 import { ClassesCreate, ClassesList, ClassesShow } from "./pages/classes";
 import { authProvider } from "./providers/auth";
+import ResetPassword from "./pages/reset-password";
 
 function App() {
   return (
@@ -85,6 +86,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                 </Route>
 
                 <Route
@@ -110,6 +112,7 @@ function App() {
                     <Route path="/classes/:id" element={<ClassesShow />} />
                   </Route>
                 </Route>
+                <Route path="*" element={<ErrorComponent />} />
               </Routes>
               <Toaster />
               <RefineKbar />
