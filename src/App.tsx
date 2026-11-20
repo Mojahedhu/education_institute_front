@@ -47,6 +47,16 @@ function App() {
                 syncWithLocation: true,
                 warnWhenUnsavedChanges: true,
                 projectId: "ihv7Tq-MWcJkG-fCWJuJ",
+                title: {
+                  text: "Education Institute",
+                  icon: (
+                    <img
+                      src="/logo.png"
+                      alt="Logo"
+                      className="h-6 w-6 object-contain"
+                    />
+                  ),
+                },
               }}
               resources={[
                 {
