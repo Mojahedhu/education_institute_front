@@ -88,7 +88,7 @@ export const SignInForm = () => {
 
         <CardContent className="content">
           <Form {...form}>
-            <form onSubmit={handleSubmit(handleSignIn)}>
+            <form onSubmit={handleSubmit(handleSignIn)} className="form">
               <FormField
                 control={form.control}
                 name="email"
@@ -99,7 +99,8 @@ export const SignInForm = () => {
                       <Input
                         id="email"
                         type="email"
-                        placeholder=""
+                        placeholder="example@ex.com"
+                        aria-required="true"
                         {...field}
                       />
                     </FormControl>
@@ -115,7 +116,11 @@ export const SignInForm = () => {
                   <FormItem className="field">
                     <FormLabel htmlFor="password">Password</FormLabel>
                     <FormControl>
-                      <InputPassword id="password" {...field} />
+                      <InputPassword
+                        id="password"
+                        aria-required="true"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

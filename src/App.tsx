@@ -31,7 +31,7 @@ import { SubjectCreate, SubjectsList } from "./pages/subjects";
 import { ClassesCreate, ClassesList, ClassesShow } from "./pages/classes";
 import { authProvider } from "./providers/auth";
 import ResetPassword from "./pages/reset-password";
-import { ErrorBoundary } from "./components/refine-ui/layout/error-baoudary";
+import { ErrorBoundary } from "./components/refine-ui/layout/error-boundary";
 
 const APP_TITLE = {
   text: "Education Institute",
