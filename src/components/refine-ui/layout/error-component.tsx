@@ -33,8 +33,8 @@ export function ErrorComponent() {
             action: action,
             resource: resource?.name,
           },
-          `You may have forgotten to add the "${action}" component to "${resource?.name}" resource.`
-        )
+          `You may have forgotten to add the "${action}" component to "${resource?.name}" resource.`,
+        ),
       );
     }
   }, [resource, action, translate]);
@@ -46,7 +46,7 @@ export function ErrorComponent() {
         "items-center",
         "justify-center",
         "bg-background",
-        "my-auto"
+        "my-auto h-screen",
       )}
     >
       <div className={cn("text-center", "space-y-8")}>
@@ -91,7 +91,7 @@ export function ErrorComponent() {
             <p className={cn("text-muted-foreground")}>
               {translate(
                 "pages.error.description",
-                "The page you're looking for does not exist."
+                "The page you're looking for does not exist.",
               )}
             </p>
             {errorMessage && (
@@ -103,7 +103,7 @@ export function ErrorComponent() {
                         "h-4",
                         "w-4",
                         "text-muted-foreground",
-                        "cursor-help"
+                        "cursor-help",
                       )}
                       data-testid="error-component-tooltip"
                     />
@@ -116,16 +116,17 @@ export function ErrorComponent() {
             )}
           </div>
         </div>
-
-        <Button
-          onClick={() => {
-            go({ to: "/" });
-          }}
-          className={cn("flex", "items-center", "gap-2", "mx-auto")}
-        >
-          <ChevronLeft className={cn("h-4", "w-4")} />
-          {translate("pages.error.backHome", "Back to homepage")}
-        </Button>
+        <div>
+          <Button
+            onClick={() => {
+              go({ to: "/" });
+            }}
+            className={cn("flex", "items-center", "gap-2", "mx-auto")}
+          >
+            <ChevronLeft className={cn("h-4", "w-4")} />
+            {translate("pages.error.backHome", "Back to homepage")}
+          </Button>
+        </div>
       </div>
     </div>
   );

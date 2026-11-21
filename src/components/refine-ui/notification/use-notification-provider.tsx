@@ -46,7 +46,7 @@ export function useNotificationProvider(): NotificationProvider {
               id: toastId,
               duration: (undoableTimeout || 5) * 1000,
               unstyled: true,
-            }
+            },
           );
           return;
         }
