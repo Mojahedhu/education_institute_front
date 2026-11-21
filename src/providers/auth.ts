@@ -95,6 +95,10 @@ export const authProvider: AuthProvider = {
         }
         return {
           success: true,
+          successNotification: {
+            message: "Login successful",
+            description: "Welcome back!",
+          },
         };
       }
 
@@ -121,6 +125,10 @@ export const authProvider: AuthProvider = {
       return {
         success: true,
         redirectTo: "/",
+        successNotification: {
+          message: "Login successful",
+          description: "Welcome back!",
+        },
       };
     } catch (error) {
       console.error("Login exception:", error);
