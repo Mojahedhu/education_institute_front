@@ -87,7 +87,7 @@ export type Subject = {
 };
 
 export type SubjectDetails = {
-  subject: Subject & {
+  subject: Omit<Subject, "department"> & {
     department?: Department | null;
   };
   totals: {
