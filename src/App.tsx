@@ -31,6 +31,12 @@ import { SubjectCreate, SubjectsList } from "./pages/subjects";
 import { ClassesCreate, ClassesList, ClassesShow } from "./pages/classes";
 import { authProvider } from "./providers/auth";
 import ResetPassword from "./pages/reset-password";
+import { ErrorBoundary } from "./components/refine-ui/layout/error-boundary";
+
+const APP_TITLE = {
+  text: "Education Institute",
+  icon: <img src="/logo.png" alt="Logo" className="h-6 w-6 object-contain" />,
+};
 
 function App() {
   return (
@@ -48,14 +54,7 @@ function App() {
                 warnWhenUnsavedChanges: true,
                 projectId: "ihv7Tq-MWcJkG-fCWJuJ",
                 title: {
-                  text: "Education Institute",
-                  icon: (
-                    <img
-                      src="/logo.png"
-                      alt="Logo"
-                      className="h-6 w-6 object-contain"
-                    />
-                  ),
+                  ...APP_TITLE,
                 },
               }}
               resources={[
@@ -85,47 +84,55 @@ function App() {
                 },
               ]}
             >
-              <Routes>
-                <Route
-                  element={
-                    <Authenticated key="public-routes" fallback={<Outlet />}>
-                      <NavigateToResource fallbackTo="/" />
-                    </Authenticated>
-                  }
-                >
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                </Route>
-
-                {/* Accessible whether authenticated or not */}
-                <Route path="/reset-password" element={<ResetPassword />} />
-
-                <Route
-                  element={
-                    <Authenticated
-                      key={"private-routes"}
-                      fallback={<CatchAllNavigate to="/login" />}
-                    >
-                      <Layout>
-                        <Outlet />
-                      </Layout>
-                    </Authenticated>
-                  }
-                >
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/subjects">
-                    <Route index element={<SubjectsList />} />
-                    <Route path="create" element={<SubjectCreate />} />
+              <ErrorBoundary>
+                <Routes>
+                  <Route
+                    element={
+                      <Authenticated key="public-routes" fallback={<Outlet />}>
+                        <NavigateToResource fallbackTo="/" />
+                      </Authenticated>
+                    }
+                  >
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route
+                      path="/forgot-password"
+                      element={<ForgotPassword />}
+                    />
                   </Route>
-                  <Route path="/classes">
-                    <Route index element={<ClassesList />} />
-                    <Route path="/classes/create" element={<ClassesCreate />} />
-                    <Route path="/classes/:id" element={<ClassesShow />} />
+
+                  {/* Accessible whether authenticated or not */}
+                  <Route path="/reset-password" element={<ResetPassword />} />
+
+                  <Route
+                    element={
+                      <Authenticated
+                        key={"private-routes"}
+                        fallback={<CatchAllNavigate to="/login" />}
+                      >
+                        <Layout>
+                          <Outlet />
+                        </Layout>
+                      </Authenticated>
+                    }
+                  >
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/subjects">
+                      <Route index element={<SubjectsList />} />
+                      <Route path="create" element={<SubjectCreate />} />
+                    </Route>
+                    <Route path="/classes">
+                      <Route index element={<ClassesList />} />
+                      <Route
+                        path="/classes/create"
+                        element={<ClassesCreate />}
+                      />
+                      <Route path="/classes/:id" element={<ClassesShow />} />
+                    </Route>
                   </Route>
-                </Route>
-                <Route path="*" element={<ErrorComponent />} />
-              </Routes>
+                  <Route path="*" element={<ErrorComponent />} />
+                </Routes>
+              </ErrorBoundary>
               <Toaster />
               <RefineKbar />
               <UnsavedChangesNotifier />

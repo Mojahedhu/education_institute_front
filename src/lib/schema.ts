@@ -2,6 +2,7 @@ import { UserRole } from "@/types";
 import * as z from "zod";
 
 // Auth schemas
+// Register
 export const registerSchema = z
   .object({
     email: z.string().email("Invalid email address"),
@@ -20,7 +21,7 @@ export const registerSchema = z
   });
 
 export type RegisterFormValues = z.infer<typeof registerSchema>;
-
+// Reset password
 export const resetPasswordSchema = z
   .object({
     password: z.string().min(8, "Password must be at least 8 characters"),
@@ -34,6 +35,16 @@ export const resetPasswordSchema = z
   });
 export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
+// Sign-in
+export const signInSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+  rememberMe: z.boolean().optional(),
+});
+
+export type SignInFormValues = z.infer<typeof signInSchema>;
+
+// ___________________________________________________________________________
 // App schemas
 export const facultySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
