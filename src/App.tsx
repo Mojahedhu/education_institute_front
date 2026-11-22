@@ -27,7 +27,7 @@ import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import "./App.css";
 import Dashboard from "./pages/dashboard";
 import { BookOpen, GraduationCap, Home } from "lucide-react";
-import { SubjectCreate, SubjectsList } from "./pages/subjects";
+import { SubjectCreate, SubjectsList, SubjectsShow } from "./pages/subjects";
 import { ClassesCreate, ClassesList, ClassesShow } from "./pages/classes";
 import { authProvider } from "./providers/auth";
 import ResetPassword from "./pages/reset-password";
@@ -67,6 +67,7 @@ function App() {
                   name: "subjects",
                   list: "/subjects",
                   create: "/subjects/create",
+                  show: "/subjects/show/:id",
                   meta: {
                     label: "Subjects",
                     icon: <BookOpen />,
@@ -76,7 +77,7 @@ function App() {
                   name: "classes",
                   list: "/classes",
                   create: "classes/create",
-                  show: "classes/:id",
+                  show: "classes/show/:id",
                   meta: {
                     label: "Classes",
                     icon: <GraduationCap />,
@@ -120,6 +121,7 @@ function App() {
                     <Route path="/subjects">
                       <Route index element={<SubjectsList />} />
                       <Route path="create" element={<SubjectCreate />} />
+                      <Route path="show/:id" element={<SubjectsShow />} />
                     </Route>
                     <Route path="/classes">
                       <Route index element={<ClassesList />} />
@@ -127,7 +129,10 @@ function App() {
                         path="/classes/create"
                         element={<ClassesCreate />}
                       />
-                      <Route path="/classes/:id" element={<ClassesShow />} />
+                      <Route
+                        path="/classes/show/:id"
+                        element={<ClassesShow />}
+                      />
                     </Route>
                   </Route>
                   <Route path="*" element={<ErrorComponent />} />

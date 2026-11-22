@@ -1,12 +1,3 @@
-export type Subject = {
-  id: number;
-  name: string;
-  code: string;
-  description: string;
-  department: string;
-  createdAt?: string;
-};
-
 export type ListResponse<T = unknown> = {
   data?: T[];
   pagination?: {
@@ -84,6 +75,49 @@ export type User = {
   department?: string;
 };
 
+// -----------------------------------------------------
+// Subject types
+export type Subject = {
+  id: number;
+  name: string;
+  code: string;
+  description: string;
+  department: string;
+  createdAt?: string;
+};
+
+export type SubjectDetails = {
+  subject: Subject & {
+    department?: Department | null;
+  };
+  totals: {
+    classes: number;
+  };
+};
+export type SubjectClass = {
+  id: number;
+  name: string;
+  status?: string | null;
+  capacity?: number | null;
+  teacher?: {
+    id: string;
+    name: string;
+    email?: string | null;
+    image?: string | null;
+  } | null;
+};
+
+export type SubjectUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  image?: string | null;
+};
+// ---------------------------------------------------
+
+// -------------------------------------------------------
+// Class types
 export type Schedule = {
   day: string;
   startTime: string;
@@ -126,6 +160,10 @@ export type ClassListItem = Omit<
 
 export type ClassUser = Pick<User, "id" | "name" | "email" | "role" | "image">;
 
+// -----------------------------------------------------------------------
+
+// -------------------------------------------
+// Auth type
 export type SignUpPayload = {
   email: string;
   name: string;
@@ -135,3 +173,5 @@ export type SignUpPayload = {
   role: UserRole;
   providerName?: string;
 };
+
+// ----------------------------------

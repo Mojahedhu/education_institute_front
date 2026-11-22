@@ -1,3 +1,4 @@
 import SubjectCreate from "./create";
 import SubjectsList from "./list";
-export { SubjectCreate, SubjectsList };
+import SubjectsShow from "./show";
+export { SubjectCreate, SubjectsList, SubjectsShow };

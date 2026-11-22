@@ -20,10 +20,12 @@ import { cn } from "@/lib/utils";
 
 type DataTableProps<TData extends BaseRecord> = {
   table: UseTableReturnType<TData, HttpError>;
+  paginationVariant?: "default" | "simple";
 };
 
 export function DataTable<TData extends BaseRecord>({
   table,
+  paginationVariant = "default",
 }: DataTableProps<TData>) {
   const {
     reactTable: { getHeaderGroups, getRowModel, getAllColumns },
@@ -102,7 +104,7 @@ export function DataTable<TData extends BaseRecord>({
                         <div className={cn("flex", "items-center", "gap-1")}>
                           {flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                         </div>
                       )}
@@ -136,7 +138,7 @@ export function DataTable<TData extends BaseRecord>({
                         </TableCell>
                       ))}
                     </TableRow>
-                  )
+                  ),
                 )}
                 <TableRow>
                   <TableCell
@@ -153,7 +155,7 @@ export function DataTable<TData extends BaseRecord>({
                         "h-8",
                         "w-8",
                         "-translate-x-1/2",
-                        "-translate-y-1/2"
+                        "-translate-y-1/2",
                       )}
                     />
                   </TableCell>
@@ -180,7 +182,7 @@ export function DataTable<TData extends BaseRecord>({
                           <div className="truncate">
                             {flexRender(
                               cell.column.columnDef.cell,
-                              cell.getContext()
+                              cell.getContext(),
                             )}
                           </div>
                         </TableCell>
@@ -206,6 +208,7 @@ export function DataTable<TData extends BaseRecord>({
           pageSize={pageSize}
           setPageSize={setPageSize}
           total={tableQuery.data?.total}
+          variant={paginationVariant}
         />
       )}
     </div>
@@ -235,7 +238,7 @@ function DataTableNoData({
             "items-center",
             "justify-center",
             "gap-2",
-            "bg-background"
+            "bg-background",
           )}
           style={{
             position: isOverflowing.horizontal ? "sticky" : "absolute",
@@ -279,8 +282,8 @@ export function getCommonStyles<TData>({
       isOverflowing.horizontal && isLastLeftPinnedColumn
         ? "-4px 0 4px -4px var(--border) inset"
         : isOverflowing.horizontal && isFirstRightPinnedColumn
-        ? "4px 0 4px -4px var(--border) inset"
-        : undefined,
+          ? "4px 0 4px -4px var(--border) inset"
+          : undefined,
     left:
       isOverflowing.horizontal && isPinned === "left"
         ? `${column.getStart("left")}px`

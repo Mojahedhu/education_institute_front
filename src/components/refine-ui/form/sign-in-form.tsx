@@ -119,6 +119,7 @@ export const SignInForm = () => {
                       <InputPassword
                         id="password"
                         aria-required="true"
+                        placeholder="Enter password"
                         {...field}
                       />
                     </FormControl>
