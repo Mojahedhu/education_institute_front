@@ -52,6 +52,8 @@ type FormArgs = z.infer<typeof classSchema>;
 const ClassesCreate = () => {
   const [subjectOpen, setSubjectOpen] = useState(false);
   const [teacherOpen, setTeacherOpen] = useState(false);
+  const [subjectSearch, setSubjectSearch] = useState("");
+  const [teacherSearch, setTeacherSearch] = useState("");
   const back = useBack();
 
   const form = useForm({
@@ -193,7 +195,7 @@ const ClassesCreate = () => {
       <div className="my-4 flex items-center">
         <Card className="class-form-card">
           <CardHeader className="relative z-10">
-            <CardTitle className="text-2xl pb-0 font-bold text-primary">
+            <CardTitle className="text-2xl pb-0 font-bold text-gradient">
               Fill out Form
             </CardTitle>
           </CardHeader>
@@ -306,6 +308,7 @@ const ClassesCreate = () => {
                               <Button
                                 variant="outline"
                                 role="combobox"
+                                type="button"
                                 className={cn(
                                   "w-full justify-between font-normal",
                                   !field.value && "text-muted-foreground",
@@ -321,13 +324,18 @@ const ClassesCreate = () => {
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
-                          <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                          <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
                             <Command shouldFilter={false}>
                               {" "}
                               {/* shouldFilter={false} lets Refine/server handle the filtering */}
                               <CommandInput
+                                className="w-full text-center placeholder:text-center"
                                 placeholder="Search subject..."
-                                onValueChange={onSearchSubjects}
+                                value={subjectSearch}
+                                onValueChange={(val) => {
+                                  onSearchSubjects(val);
+                                  setSubjectSearch(val);
+                                }}
                               />
                               <CommandList>
                                 <CommandEmpty className="text-center">
@@ -338,21 +346,21 @@ const ClassesCreate = () => {
                                     <CommandItem
                                       key={id}
                                       value={id.toString()}
-                                      className="flex gap-2 cursor-pointer items-center w-full hover:bg-accent hover:text-accent-foreground"
+                                      className="flex gap-2 cursor-pointer items-center w-full hover:bg-accent hover:text-accent-foreground px-2"
                                       onSelect={() => {
                                         field.onChange(Number(id));
                                         setSubjectOpen(false);
                                       }}
                                     >
+                                      {name} ({code})
                                       <Check
                                         className={cn(
-                                          "mr-2 h-4 w-4",
+                                          "mr-2 h-4 w-4 ml-auto",
                                           id === field.value
                                             ? "opacity-100"
                                             : "opacity-0",
                                         )}
                                       />
-                                      {name} ({code})
                                     </CommandItem>
                                   ))}
                                 </CommandGroup>
@@ -418,6 +426,7 @@ const ClassesCreate = () => {
                               <Button
                                 variant="outline"
                                 role="combobox"
+                                type="button"
                                 className={cn(
                                   "w-full justify-between font-normal",
                                   !field.value && "text-muted-foreground",
@@ -433,13 +442,18 @@ const ClassesCreate = () => {
                               </Button>
                             </FormControl>
                           </PopoverTrigger>
-                          <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                          <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
                             <Command shouldFilter={false}>
                               {" "}
                               {/* shouldFilter={false} lets Refine/server handle the filtering */}
                               <CommandInput
+                                className="w-full text-center placeholder:text-center"
                                 placeholder="Search teacher..."
-                                onValueChange={onSearchTeachers}
+                                value={teacherSearch}
+                                onValueChange={(val) => {
+                                  onSearchTeachers(val);
+                                  setTeacherSearch(val);
+                                }}
                               />
                               <CommandList>
                                 <CommandEmpty className="text-center">
@@ -448,7 +462,7 @@ const ClassesCreate = () => {
                                 <CommandGroup>
                                   {teachers.map(({ id, name }) => (
                                     <CommandItem
-                                      className="flex gap-2 cursor-pointer items-center w-full hover:bg-accent hover:text-accent-foreground"
+                                      className="flex gap-2 cursor-pointer items-center w-full hover:bg-accent hover:text-accent-foreground px-2"
                                       key={id.toString()}
                                       value={name}
                                       onSelect={() => {
@@ -456,15 +470,15 @@ const ClassesCreate = () => {
                                         setTeacherOpen(false);
                                       }}
                                     >
+                                      {name}
                                       <Check
                                         className={cn(
-                                          "mr-2 h-4 w-4",
+                                          "mr-2 h-4 w-4 ml-auto",
                                           id === field.value
                                             ? "opacity-100"
                                             : "opacity-0",
                                         )}
                                       />
-                                      {name}
                                     </CommandItem>
                                   ))}
                                 </CommandGroup>

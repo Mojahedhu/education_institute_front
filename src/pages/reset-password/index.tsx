@@ -47,7 +47,7 @@ const ResetPassword = () => {
 
   const onSubmit = async (values: ResetPasswordFormValues) => {
     if (!token) {
-      toast.error("Invalid or missing reset token.");
+      toast.error("Invalid or missing reset token.", { richColors: true });
       return;
     }
     setIsSubmitting(true);
@@ -69,16 +69,21 @@ const ResetPassword = () => {
           return;
         }
 
-        toast.error("Failed to reset password. Please try again.");
+        toast.error("Failed to reset password. Please try again.", {
+          richColors: true,
+        });
         return;
       }
       toast.success(
         "Password reset successfully! Please sign in with your new password.",
+        { richColors: true },
       );
       navigate("/login");
     } catch (err) {
       console.error(err);
-      toast.error("An unexpected error occurred. Please try again.");
+      toast.error("An unexpected error occurred. Please try again.", {
+        richColors: true,
+      });
     } finally {
       setIsSubmitting(false);
     }
