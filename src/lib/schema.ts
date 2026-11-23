@@ -57,6 +57,7 @@ export const facultySchema = z.object({
   imageCldPubId: z.string().optional(),
 });
 
+// Subject schemas ...............................
 export const subjectSchema = z.object({
   name: z.string().min(3, "Subject name must be at least 3 characters"),
   code: z.string().min(5, "Subject code must be at least 5 characters"),
@@ -67,6 +68,22 @@ export const subjectSchema = z.object({
     .string()
     .min(2, "Subject department must be at least 2 characters"),
 });
+
+export const subjectCreateSchema = z.object({
+  departmentId: z.coerce
+    .number({
+      required_error: "Department is required",
+      invalid_type_error: "Department is required",
+    })
+    .min(1, "Department is required"),
+  name: z.string().min(3, "Subject name must be at least 3 characters"),
+  code: z.string().min(3, "Subject code must be at least 3 characters"),
+  description: z
+    .string()
+    .min(5, "Subject description must be at least 5 characters"),
+});
+
+export type SubjectFormValues = z.infer<typeof subjectCreateSchema>;
 
 const scheduleSchema = z.object({
   day: z.string().min(1, "Day is required"),

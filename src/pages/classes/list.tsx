@@ -309,11 +309,12 @@ const ClassesList = () => {
                 </Button>
               </PopoverTrigger>
 
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+              <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
                 <Command shouldFilter={false}>
                   {" "}
                   {/* shouldFilter={false} lets Refine/server handle the filtering */}
                   <CommandInput
+                    className="w-full text-center placeholder:text-center"
                     value={subjectSearch}
                     placeholder="Search subjects..."
                     onValueChange={(val) => {

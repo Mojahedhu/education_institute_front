@@ -4,25 +4,36 @@ import { DataTable } from "@/components/refine-ui/data-table/data-table";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { ListView } from "@/components/refine-ui/views/list-view";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { DEPARTMENT_OPTIONS } from "@/constants";
-import { Subject } from "@/types";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import { cn } from "@/lib/utils";
+import { Department, Subject } from "@/types";
+import { useSelect } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef } from "@tanstack/react-table";
+import {
+  CommandEmpty,
+  Command,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "cmdk";
 
-import { Search } from "lucide-react";
+import { Check, ChevronDown, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 const SubjectsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectDepartment, setSelectDepartment] = useState("all");
+  const [selectedDepartment, setSelectedDepartment] = useState("all");
+  const [departmentOpen, setDepartmentOpen] = useState(false);
+  const [departmentSearch, setDepartmentSearch] = useState("");
 
   const subjectColumns = useMemo<ColumnDef<Subject>[]>(
     () => [
@@ -81,13 +92,13 @@ const SubjectsList = () => {
   );
 
   const departmentFilters =
-    selectDepartment === "all"
+    selectedDepartment === "all"
       ? []
       : [
           {
             field: "department",
             operator: "eq" as const,
-            value: selectDepartment,
+            value: selectedDepartment,
           },
         ];
 
@@ -124,6 +135,29 @@ const SubjectsList = () => {
     },
   });
 
+  // Fetch subject list
+  const {
+    options: departmentOptions,
+    query: departmentsQuery,
+    onSearch: onSearchDepartments,
+  } = useSelect<Department>({
+    resource: "departments",
+    optionLabel: "name",
+    optionValue: "id",
+    debounce: 300,
+    pagination: {
+      mode: "off",
+    },
+    onSearch: (value) => [
+      {
+        field: "name",
+        operator: "contains",
+        value,
+      },
+    ],
+  });
+
+  const departments = departmentsQuery?.data?.data || [];
   return (
     <ListView>
       <Breadcrumb />
@@ -143,7 +177,7 @@ const SubjectsList = () => {
             />
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
-            <Select
+            {/* <Select
               value={selectDepartment}
               onValueChange={setSelectDepartment}
             >
@@ -159,7 +193,104 @@ const SubjectsList = () => {
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
+            </Select> */}
+
+            <Popover open={departmentOpen} onOpenChange={setDepartmentOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  role="combobox"
+                  className={cn(
+                    "justify-between font-normal",
+                    // !subjectValue && "text-muted-foreground",
+                  )}
+                  disabled={departmentsQuery.isLoading}
+                >
+                  <span className="truncate">
+                    {selectedDepartment === "all"
+                      ? "All Departments"
+                      : departmentOptions.find(
+                          (opt) =>
+                            String(opt.label).toLowerCase() ===
+                            String(selectedDepartment).toLowerCase(),
+                        )?.label ||
+                        (selectedDepartment === "all"
+                          ? "All Departments"
+                          : selectedDepartment)}
+                  </span>
+                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
+                <Command shouldFilter={false}>
+                  {" "}
+                  {/* shouldFilter={false} lets Refine/server handle the filtering */}
+                  <CommandInput
+                    className="w-full text-center placeholder:text-center"
+                    value={departmentSearch}
+                    placeholder="Search subjects..."
+                    onValueChange={(val) => {
+                      onSearchDepartments(val);
+                      setDepartmentSearch(val);
+                    }}
+                  />
+                  <CommandList>
+                    <CommandEmpty className="text-center">
+                      No department found.
+                    </CommandEmpty>
+                    <CommandGroup>
+                      {/* Always provide "All Departments" when search is empty or user is typing "all" */}
+                      {(!departmentSearch ||
+                        "all departments".includes(
+                          departmentSearch.toLocaleLowerCase().trim(),
+                        )) && (
+                        <CommandItem
+                          value="all"
+                          className="flex gap-2 cursor-pointer items-center w-full hover:bg-accent hover:text-accent-foreground px-2"
+                          onSelect={() => {
+                            setSelectedDepartment("all");
+                            setDepartmentOpen(false);
+                          }}
+                        >
+                          All Departments
+                          <Check
+                            className={cn(
+                              "ml-auto h-4 w-4",
+                              "all" === selectedDepartment
+                                ? "opacity-100"
+                                : "opacity-0",
+                            )}
+                          />
+                        </CommandItem>
+                      )}
+                      {departments.map(({ name, id }) => (
+                        <CommandItem
+                          key={id}
+                          value={id.toString()}
+                          className="flex gap-2 cursor-pointer items-center w-full hover:bg-accent hover:text-accent-foreground px-2"
+                          onSelect={() => {
+                            setSelectedDepartment(name);
+                            setDepartmentOpen(false);
+                          }}
+                        >
+                          {name}
+                          <Check
+                            className={cn(
+                              "ml-auto h-4 w-4",
+                              name === selectedDepartment
+                                ? "opacity-100"
+                                : "opacity-0",
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+
             <CreateButton resource="subjects" />
           </div>
         </div>

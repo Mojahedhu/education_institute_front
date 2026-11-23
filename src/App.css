@@ -185,6 +185,10 @@
 }
 
 @layer components {
+  .text-gradient {
+    @apply bg-linear-to-r from-orange-500 to-white bg-clip-text text-transparent;
+  }
+
   .page-title {
     @apply text-3xl font-bold text-foreground tracking-tight;
   }
