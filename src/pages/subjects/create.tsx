@@ -39,6 +39,8 @@ import { toast } from "sonner";
 const SubjectCreate = () => {
   const [departmentOpen, setDepartmentOpen] = useState(false);
   const [departmentSearch, setDepartmentSearch] = useState("");
+  const [selectedDepartmentName, setSelectedDepartmentName] =
+    useState<string>("");
   const back = useBack();
 
   const form = useForm<BaseRecord, HttpError, SubjectFormValues>({
@@ -139,6 +141,7 @@ const SubjectCreate = () => {
                               type="button"
                               variant="outline"
                               role="combobox"
+                              aria-required={true}
                               className={cn(
                                 "w-full justify-between font-normal",
                                 !field.value && "text-muted-foreground",
@@ -146,10 +149,12 @@ const SubjectCreate = () => {
                               disabled={departmentsLoading}
                             >
                               {field.value
-                                ? (departmentsOptions.find(
+                                ? selectedDepartmentName ||
+                                  (departmentsOptions.find(
                                     (opt) => opt.value === field.value,
-                                  )?.label ?? "Select subject")
-                                : "Select subject"}
+                                  )?.label ??
+                                    "Select department")
+                                : "Select department"}
                               <ChevronsDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                           </FormControl>
@@ -180,6 +185,7 @@ const SubjectCreate = () => {
                                       className="flex gap-2 cursor-pointer items-center w-full hover:bg-accent hover:text-accent-foreground px-2"
                                       onSelect={() => {
                                         field.onChange(Number(value));
+                                        setSelectedDepartmentName(label);
                                         setDepartmentOpen(false);
                                       }}
                                     >
@@ -215,7 +221,11 @@ const SubjectCreate = () => {
                         Subject Name <span className="text-orange-600">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="Intro to Programming" {...field} />
+                        <Input
+                          placeholder="Intro to Programming"
+                          {...field}
+                          aria-required={true}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -232,7 +242,11 @@ const SubjectCreate = () => {
                         Subject Code <span className="text-orange-600">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="CS101" {...field} />
+                        <Input
+                          placeholder="CS101"
+                          {...field}
+                          aria-required={true}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -253,6 +267,7 @@ const SubjectCreate = () => {
                           placeholder="Describe the subject focus..."
                           className="min-h-28"
                           {...field}
+                          aria-required={true}
                         />
                       </FormControl>
                       <FormMessage />
