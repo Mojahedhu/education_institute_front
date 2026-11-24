@@ -124,12 +124,6 @@ export type Schedule = {
   endTime: string;
 };
 
-export type Department = {
-  id: number;
-  name: string;
-  description: string;
-};
-
 export type ClassDetails = {
   id: number;
   name: string;
@@ -161,6 +155,62 @@ export type ClassListItem = Omit<
 export type ClassUser = Pick<User, "id" | "name" | "email" | "role" | "image">;
 
 // -----------------------------------------------------------------------
+
+// ----------------------------------------------------------------
+// Department
+
+export type Department = {
+  id: number;
+  name: string;
+  description: string;
+};
+
+export type DepartmentListItem = {
+  code?: string | null;
+  totalSubjects?: number | null;
+} & Department;
+
+export type DepartmentDetails = {
+  department: Department;
+  totals: {
+    subjects: number;
+    classes: number;
+    enrolledStudents: number;
+  };
+};
+
+export type DepartmentSubject = {
+  code?: string | null;
+  createdAt?: string | null;
+} & Department;
+
+export type DepartmentClass = {
+  id: number;
+  name: string;
+  status?: string | null;
+  capacity?: number | null;
+  subject?: {
+    id: number;
+    name: string;
+    code?: string | null;
+  } | null;
+  teacher?: {
+    id: string;
+    name: string;
+    email?: string | null;
+    image?: string | null;
+  } | null;
+};
+
+export type DepartmentUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  image?: string | null;
+};
+
+// --------------------------------------------------
 
 // -------------------------------------------
 // Auth type
