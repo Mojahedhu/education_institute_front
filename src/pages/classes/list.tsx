@@ -3,41 +3,23 @@ import { ShowButton } from "@/components/refine-ui/buttons/show";
 import { DataTable } from "@/components/refine-ui/data-table/data-table";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { ListView } from "@/components/refine-ui/views/list-view";
+import SearchableSelect from "@/components/searchable-select";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+
 import { ClassListItem, Subject, User } from "@/types";
 import { useSelect } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "cmdk";
 
-import { Check, ChevronDown, Search } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Search } from "lucide-react";
+import { SetStateAction, useEffect, useMemo, useState } from "react";
 
 const ClassesList = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("all");
-  const [selectedTeacher, setSelectedTeacher] = useState("all");
-  const [subjectOpen, setSubjectOpen] = useState(false);
-  const [teacherOpen, setTeacherOpen] = useState(false);
-
-  const [subjectSearch, setSubjectSearch] = useState("");
-  const [teacherSearch, setTeacherSearch] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState<string>("all");
+  const [selectedTeacher, setSelectedTeacher] = useState<string>("all");
 
   const classColumn = useMemo<ColumnDef<ClassListItem>[]>(
     () => [
@@ -188,8 +170,21 @@ const ClassesList = () => {
     ],
   });
 
-  const subjects = subjectsQuery.data?.data || [];
-  const teachers = teachersQuery.data?.data || [];
+  // Map selected ID to name for backend filter payload
+  const selectedSubjectName = useMemo(() => {
+    if (selectedSubject === "all") return "all";
+    const found = subjectOptions.find(
+      (opt) => String(opt.value) === String(selectedSubject),
+    );
+    return found ? String(found.label) : selectedSubject;
+  }, [selectedSubject, subjectOptions]);
+  const selectedTeacherName = useMemo(() => {
+    if (selectedTeacher === "all") return "all";
+    const found = teacherOptions.find(
+      (opt) => String(opt.value) === String(selectedTeacher),
+    );
+    return found ? String(found.label) : selectedTeacher;
+  }, [selectedTeacher, teacherOptions]);
 
   const subjectFilters =
     selectedSubject === "all"
@@ -198,7 +193,7 @@ const ClassesList = () => {
           {
             field: "subject",
             operator: "eq" as const,
-            value: selectedSubject,
+            value: selectedSubjectName,
           },
         ];
 
@@ -209,7 +204,7 @@ const ClassesList = () => {
           {
             field: "teacher",
             operator: "eq" as const,
-            value: selectedTeacher,
+            value: selectedTeacherName,
           },
         ];
 
@@ -272,17 +267,21 @@ const ClassesList = () => {
           </div>
 
           <div className="flex gap-2 w-full sm:w-auto">
-            {/* <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by subject" />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value="all">All Subjects</SelectItem>
-              </SelectContent>
-            </Select> */}
-
-            <Popover open={subjectOpen} onOpenChange={setSubjectOpen}>
+            <SearchableSelect
+              variant="filter"
+              value={selectedSubject}
+              onValueChange={(val) =>
+                setSelectedSubject(val as SetStateAction<string>)
+              }
+              options={subjectOptions} // e.g. [{ label: "Jane Doe", value: 1 }]
+              placeholder="Filter by subject"
+              searchPlaceholder="Search subject..."
+              emptyMessage="No subject found."
+              isLoading={subjectsQuery.isLoading}
+              onSearch={onSearchSubjects}
+              allOptionLabel="All Subjects"
+            />
+            {/* <Popover open={subjectOpen} onOpenChange={setSubjectOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
@@ -312,8 +311,8 @@ const ClassesList = () => {
               <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
                 <Command shouldFilter={false}>
                   {" "}
-                  {/* shouldFilter={false} lets Refine/server handle the filtering */}
                   <CommandInput
+                    //  shouldFilter={false} lets Refine/server handle the filtering
                     className="w-full text-center placeholder:text-center"
                     value={subjectSearch}
                     placeholder="Search subjects..."
@@ -327,8 +326,8 @@ const ClassesList = () => {
                       No subject found.
                     </CommandEmpty>
                     <CommandGroup>
-                      {/* Always provide "All Subjects" when search is empty or user is typing "all" */}
                       {(!subjectSearch ||
+                        //  Always provide "All Subjects" when search is empty or user is typing "all"
                         "all subjects".includes(
                           subjectSearch.toLocaleLowerCase().trim(),
                         )) && (
@@ -376,18 +375,23 @@ const ClassesList = () => {
                   </CommandList>
                 </Command>
               </PopoverContent>
-            </Popover>
+            </Popover> */}
+            <SearchableSelect
+              variant="filter"
+              value={selectedTeacher}
+              onValueChange={(val) =>
+                setSelectedTeacher(val as SetStateAction<string>)
+              }
+              options={teacherOptions} // e.g. [{ label: "Jane Doe", value: 1 }]
+              placeholder="Filter by teacher"
+              searchPlaceholder="Search teacher..."
+              emptyMessage="No teacher found."
+              isLoading={teachersQuery.isLoading}
+              onSearch={onSearchTeachers}
+              allOptionLabel="All Teachers"
+            />
 
-            {/* <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by teacher" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Teachers</SelectItem>
-              </SelectContent>
-            </Select> */}
-
-            <Popover open={teacherOpen} onOpenChange={setTeacherOpen}>
+            {/* <Popover open={teacherOpen} onOpenChange={setTeacherOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
@@ -417,8 +421,8 @@ const ClassesList = () => {
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <Command shouldFilter={false}>
                   {" "}
-                  {/* shouldFilter={false} lets Refine/server handle the filtering */}
                   <CommandInput
+                    // shouldFilter={false} lets Refine/server handle the filtering
                     placeholder="Search Teachers..."
                     value={teacherSearch}
                     onValueChange={(val) => {
@@ -431,8 +435,8 @@ const ClassesList = () => {
                       No Teachers found.
                     </CommandEmpty>
                     <CommandGroup>
-                      {/* Always provide "All Subjects" when search is empty or user is typing "all" */}
                       {(!teacherSearch ||
+                        //  Always provide "All Subjects" when search is empty or user is typing "all"
                         "all teachers".includes(
                           teacherSearch.toLocaleLowerCase().trim(),
                         )) && (
@@ -480,7 +484,7 @@ const ClassesList = () => {
                   </CommandList>
                 </Command>
               </PopoverContent>
-            </Popover>
+            </Popover> */}
             <CreateButton resource="classes" />
           </div>
         </div>

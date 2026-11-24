@@ -30,30 +30,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ControllerRenderProps } from "react-hook-form";
 import { Subject, UploadWidgetValue, User } from "@/types";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Loader2, Plus } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "cmdk";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
+
+import { Loader2, Plus } from "lucide-react";
+
+import SearchableSelect from "@/components/searchable-select";
 
 type FormArgs = z.infer<typeof classSchema>;
 
 const ClassesCreate = () => {
-  const [subjectOpen, setSubjectOpen] = useState(false);
-  const [teacherOpen, setTeacherOpen] = useState(false);
-  const [subjectSearch, setSubjectSearch] = useState("");
-  const [teacherSearch, setTeacherSearch] = useState("");
   const back = useBack();
 
   const form = useForm({
@@ -177,12 +161,6 @@ const ClassesCreate = () => {
     ],
   });
 
-  const teachers = teachersQuery.data?.data || [];
-  // const teacherIsLoading = teachersQuery.isLoading;
-
-  const subjects = subjectsQuery.data?.data || [];
-  // const subjectIsLoading = subjectsQuery.isLoading;
-
   return (
     <CreateView className="class-view">
       <Breadcrumb />
@@ -258,45 +236,6 @@ const ClassesCreate = () => {
                     control={control}
                     name="subjectId"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Subject <span className="text-orange-600">*</span>
-                        </FormLabel>
-
-                        <Select
-                          value={field.value?.toString()}
-                          onValueChange={(val) => field.onChange(Number(val))}
-                          disabled={subjectsQuery.isLoading}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select a subject" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {subjects.map(({ id, name, code }) => (
-                              <SelectItem key={id} value={id.toString()}>
-                                {name} {code}
-                              </SelectItem>
-                            ))}
-                            {
-                              // {subjects.map(({ id, code, name }) => (
-                              //   <SelectItem key={id} value={id.toString()}>
-                              //     {name} {code}
-                              //   </SelectItem>
-                              // ))}
-                            }
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  /> */}
-
-                  <FormField
-                    control={control}
-                    name="subjectId"
-                    render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormLabel>Subject</FormLabel>
                         <Popover
@@ -327,8 +266,8 @@ const ClassesCreate = () => {
                           <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
                             <Command shouldFilter={false}>
                               {" "}
-                              {/* shouldFilter={false} lets Refine/server handle the filtering */}
                               <CommandInput
+                              //  shouldFilter={false} lets Refine/server handle the filtering 
                                 className="w-full text-center placeholder:text-center"
                                 placeholder="Search subject..."
                                 value={subjectSearch}
@@ -371,47 +310,34 @@ const ClassesCreate = () => {
                         <FormMessage />
                       </FormItem>
                     )}
-                  />
+                  /> */}
 
-                  {/* <FormField
+                  <FormField
                     control={control}
-                    name="teacherId"
+                    name="subjectId"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Teacher <span className="text-orange-600">*</span>
-                        </FormLabel>
-
-                        <Select
-                          value={field.value?.toString()}
-                          onValueChange={field.onChange}
-                          disabled={teachersQuery.isLoading}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select a teacher" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {teacherOptions.map(({ label, value }) => (
-                              <SelectItem key={value} value={value}>
-                                {label}
-                              </SelectItem>
-                            ))}
-                            {
-                            //  {teachers.map(({ id, name }) => (
-                            //   <SelectItem key={id} value={id}>
-                            //     {name}
-                            //   </SelectItem>
-                            // ))} 
-                            }
-                          </SelectContent>
-                        </Select>
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Subject</FormLabel>
+                        <FormControl>
+                          <SearchableSelect
+                            variant="form"
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            options={subjectOptions} // e.g. [{ label: "Math (MATH101)", value: 1 }]
+                            placeholder="Select subject"
+                            searchPlaceholder="Search subject..."
+                            emptyMessage="No subject found."
+                            isLoading={subjectsQuery.isLoading}
+                            onSearch={onSearchSubjects}
+                            className="w-full"
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
-                  /> */}
-                  <FormField
+                  />
+
+                  {/* <FormField
                     control={control}
                     name="teacherId"
                     render={({ field }) => (
@@ -445,8 +371,8 @@ const ClassesCreate = () => {
                           <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
                             <Command shouldFilter={false}>
                               {" "}
-                              {/* shouldFilter={false} lets Refine/server handle the filtering */}
                               <CommandInput
+                                //  shouldFilter={false} lets Refine/server handle the filtering
                                 className="w-full text-center placeholder:text-center"
                                 placeholder="Search teacher..."
                                 value={teacherSearch}
@@ -486,6 +412,30 @@ const ClassesCreate = () => {
                             </Command>
                           </PopoverContent>
                         </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  /> */}
+                  <FormField
+                    control={control}
+                    name="teacherId"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Teacher</FormLabel>
+                        <FormControl>
+                          <SearchableSelect
+                            variant="form"
+                            value={field.value}
+                            onValueChange={field.onChange}
+                            options={teacherOptions} // e.g. [{ label: "Jane Doe", value: 1 }]
+                            placeholder="Select teacher"
+                            searchPlaceholder="Search teacher..."
+                            emptyMessage="No teacher found."
+                            isLoading={teachersQuery.isLoading}
+                            onSearch={onSearchTeachers}
+                            className="w-full"
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
