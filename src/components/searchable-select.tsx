@@ -19,6 +19,8 @@ import { cn } from "@/lib/utils";
 export interface SearchableSelectOption {
   label: React.ReactNode;
   value: string | number;
+  /** Optional plain-text string for client-side search matching when label is a ReactNode */
+  searchText?: string;
 }
 
 export interface SearchableSelectProps {
@@ -184,10 +186,19 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
                   String(option.value).toLowerCase() ===
                   String(value).toLowerCase();
 
+                // Extract text from label if it's a string, or fallback to searchText / value
+                const labelText =
+                  option.searchText ??
+                  (typeof option.label === "string" ? option.label : "");
+
                 return (
                   <CommandItem
                     key={String(option.value)}
                     value={String(option.value)}
+                    // Pass label as search keywords when client filtering (shouldFilter) is active
+                    keywords={
+                      shouldFilter && labelText ? [labelText] : undefined
+                    }
                     className="flex gap-2 cursor-pointer items-center w-full hover:bg-accent hover:text-accent-foreground px-2"
                     onSelect={() => handleSelect(option.value)}
                   >
