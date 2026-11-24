@@ -121,9 +121,9 @@ const SubjectCreate = () => {
                           value={field.value}
                           onValueChange={field.onChange}
                           options={departmentsOptions} // e.g. [{ label: "Math (MATH101)", value: 1 }]
-                          placeholder="Select subject"
-                          searchPlaceholder="Search subject..."
-                          emptyMessage="No subject found."
+                          placeholder="Select department"
+                          searchPlaceholder="Search department..."
+                          emptyMessage="No department found."
                           isLoading={departmentsQuery.isLoading}
                           onSearch={onSearchDepartment}
                           className="w-full"

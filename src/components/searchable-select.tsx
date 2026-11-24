@@ -22,6 +22,10 @@ export interface SearchableSelectOption {
 }
 
 export interface SearchableSelectProps {
+  id?: string;
+  "aria-describedby"?: string;
+  "aria-invalid"?: boolean | "true" | "false";
+
   value?: string | number;
   onValueChange: (value: string | number) => void;
   options?: SearchableSelectOption[];
@@ -43,6 +47,9 @@ export interface SearchableSelectProps {
 }
 
 export const SearchableSelect: React.FC<SearchableSelectProps> = ({
+  id,
+  "aria-describedby": ariaDescribedBy,
+  "aria-invalid": ariaInvalid,
   value,
   onValueChange,
   options = [],
@@ -86,9 +93,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
       return { label: allOptionLabel, value: allOptionValue };
     }
     return options.find(
-      (opt) =>
-        String(opt.value).toLowerCase() === String(value).toLowerCase() ||
-        String(opt.label).toLowerCase() === String(value).toLowerCase(),
+      (opt) => String(opt.value).toLowerCase() === String(value).toLowerCase(),
     );
   }, [value, options, allOptionLabel, allOptionValue]);
 
@@ -117,6 +122,9 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          id={id}
+          aria-describedby={ariaDescribedBy}
+          aria-invalid={ariaInvalid}
           variant="outline"
           role="combobox"
           type="button"
@@ -174,9 +182,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
               {options.map((option) => {
                 const isSelected =
                   String(option.value).toLowerCase() ===
-                    String(value).toLowerCase() ||
-                  String(option.label).toLowerCase() ===
-                    String(value).toLowerCase();
+                  String(value).toLowerCase();
 
                 return (
                   <CommandItem

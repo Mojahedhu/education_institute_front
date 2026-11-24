@@ -76,6 +76,36 @@ const SubjectsList = () => {
     [],
   );
 
+  // Fetch department list
+  const {
+    options: departmentOptions,
+    query: departmentsQuery,
+    onSearch: onSearchDepartments,
+  } = useSelect<Department>({
+    resource: "departments",
+    optionLabel: "name",
+    optionValue: "id",
+    debounce: 300,
+    pagination: {
+      mode: "off",
+    },
+    onSearch: (value) => [
+      {
+        field: "name",
+        operator: "contains",
+        value,
+      },
+    ],
+  });
+
+  const selectedDepartmentName = useMemo(() => {
+    if (selectedDepartment === "all") return "all";
+    const found = departmentOptions.find(
+      (opt) => String(opt.value) === String(selectedDepartment),
+    );
+    return found ? String(found.label) : selectedDepartment;
+  }, [selectedDepartment, departmentOptions]);
+
   const departmentFilters =
     selectedDepartment === "all"
       ? []
@@ -83,7 +113,7 @@ const SubjectsList = () => {
           {
             field: "department",
             operator: "eq" as const,
-            value: selectedDepartment,
+            value: selectedDepartmentName,
           },
         ];
 
@@ -118,28 +148,6 @@ const SubjectsList = () => {
         ],
       },
     },
-  });
-
-  // Fetch department list
-  const {
-    options: departmentOptions,
-    query: departmentsQuery,
-    onSearch: onSearchDepartments,
-  } = useSelect<Department>({
-    resource: "departments",
-    optionLabel: "name",
-    optionValue: "name",
-    debounce: 300,
-    pagination: {
-      mode: "off",
-    },
-    onSearch: (value) => [
-      {
-        field: "name",
-        operator: "contains",
-        value,
-      },
-    ],
   });
 
   return (

@@ -127,7 +127,7 @@ const ClassesList = () => {
   } = useSelect<Subject>({
     resource: "subjects",
     optionLabel: "name",
-    optionValue: "name",
+    optionValue: "id",
     debounce: 300,
     pagination: {
       mode: "off",
@@ -149,7 +149,7 @@ const ClassesList = () => {
   } = useSelect<User>({
     resource: "users",
     optionLabel: "name",
-    optionValue: "name",
+    optionValue: "id",
     debounce: 300,
     filters: [
       {
@@ -170,6 +170,22 @@ const ClassesList = () => {
     ],
   });
 
+  // Map selected ID to name for backend filter payload
+  const selectedSubjectName = useMemo(() => {
+    if (selectedSubject === "all") return "all";
+    const found = subjectOptions.find(
+      (opt) => String(opt.value) === String(selectedSubject),
+    );
+    return found ? String(found.label) : selectedSubject;
+  }, [selectedSubject, subjectOptions]);
+  const selectedTeacherName = useMemo(() => {
+    if (selectedTeacher === "all") return "all";
+    const found = teacherOptions.find(
+      (opt) => String(opt.value) === String(selectedTeacher),
+    );
+    return found ? String(found.label) : selectedTeacher;
+  }, [selectedTeacher, teacherOptions]);
+
   const subjectFilters =
     selectedSubject === "all"
       ? []
@@ -177,7 +193,7 @@ const ClassesList = () => {
           {
             field: "subject",
             operator: "eq" as const,
-            value: selectedSubject,
+            value: selectedSubjectName,
           },
         ];
 
@@ -188,7 +204,7 @@ const ClassesList = () => {
           {
             field: "teacher",
             operator: "eq" as const,
-            value: selectedTeacher,
+            value: selectedTeacherName,
           },
         ];
 
