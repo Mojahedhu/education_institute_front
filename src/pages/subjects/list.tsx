@@ -3,37 +3,22 @@ import { ShowButton } from "@/components/refine-ui/buttons/show";
 import { DataTable } from "@/components/refine-ui/data-table/data-table";
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { ListView } from "@/components/refine-ui/views/list-view";
+import SearchableSelect from "@/components/searchable-select";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+
 import { Department, Subject } from "@/types";
 import { useSelect } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  CommandEmpty,
-  Command,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "cmdk";
 
-import { Check, ChevronDown, Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Search } from "lucide-react";
+import { SetStateAction, useMemo, useState } from "react";
 
 const SubjectsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDepartment, setSelectedDepartment] = useState("all");
-  const [departmentOpen, setDepartmentOpen] = useState(false);
-  const [departmentSearch, setDepartmentSearch] = useState("");
 
   const subjectColumns = useMemo<ColumnDef<Subject>[]>(
     () => [
@@ -135,7 +120,7 @@ const SubjectsList = () => {
     },
   });
 
-  // Fetch subject list
+  // Fetch department list
   const {
     options: departmentOptions,
     query: departmentsQuery,
@@ -143,7 +128,7 @@ const SubjectsList = () => {
   } = useSelect<Department>({
     resource: "departments",
     optionLabel: "name",
-    optionValue: "id",
+    optionValue: "name",
     debounce: 300,
     pagination: {
       mode: "off",
@@ -157,7 +142,6 @@ const SubjectsList = () => {
     ],
   });
 
-  const departments = departmentsQuery?.data?.data || [];
   return (
     <ListView>
       <Breadcrumb />
@@ -177,25 +161,7 @@ const SubjectsList = () => {
             />
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
-            {/* <Select
-              value={selectDepartment}
-              onValueChange={setSelectDepartment}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by Department" />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value="all">All Departments</SelectItem>
-                {DEPARTMENT_OPTIONS.map(({ label, value }) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select> */}
-
-            <Popover open={departmentOpen} onOpenChange={setDepartmentOpen}>
+            {/* <Popover open={departmentOpen} onOpenChange={setDepartmentOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant={"outline"}
@@ -225,8 +191,8 @@ const SubjectsList = () => {
               <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
                 <Command shouldFilter={false}>
                   {" "}
-                  {/* shouldFilter={false} lets Refine/server handle the filtering */}
                   <CommandInput
+                  // shouldFilter={false} lets Refine/server handle the filtering 
                     className="w-full text-center placeholder:text-center"
                     value={departmentSearch}
                     placeholder="Search subjects..."
@@ -240,8 +206,8 @@ const SubjectsList = () => {
                       No department found.
                     </CommandEmpty>
                     <CommandGroup>
-                      {/* Always provide "All Departments" when search is empty or user is typing "all" */}
                       {(!departmentSearch ||
+                      //  Always provide "All Departments" when search is empty or user is typing "all" 
                         "all departments".includes(
                           departmentSearch.toLocaleLowerCase().trim(),
                         )) && (
@@ -289,7 +255,22 @@ const SubjectsList = () => {
                   </CommandList>
                 </Command>
               </PopoverContent>
-            </Popover>
+            </Popover> */}
+
+            <SearchableSelect
+              variant="filter"
+              value={selectedDepartment}
+              onValueChange={(val) =>
+                setSelectedDepartment(val as SetStateAction<string>)
+              }
+              options={departmentOptions} // e.g. [{ label: "Jane Doe", value: 1 }]
+              placeholder="Filter by department"
+              searchPlaceholder="Search department..."
+              emptyMessage="No department found."
+              isLoading={departmentsQuery.isLoading}
+              onSearch={onSearchDepartments}
+              allOptionLabel="All Departments"
+            />
 
             <CreateButton resource="subjects" />
           </div>

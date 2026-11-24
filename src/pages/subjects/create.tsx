@@ -1,5 +1,6 @@
 import { Breadcrumb } from "@/components/refine-ui/layout/breadcrumb";
 import { CreateView } from "@/components/refine-ui/views/create-view";
+import SearchableSelect from "@/components/searchable-select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,36 +12,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import { Textarea } from "@/components/ui/textarea";
 import { subjectCreateSchema, SubjectFormValues } from "@/lib/schema";
-import { cn } from "@/lib/utils";
+
 import { Department } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { BaseRecord, HttpError, useBack, useSelect } from "@refinedev/core";
 import { useForm } from "@refinedev/react-hook-form";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "cmdk";
-import { Check, ChevronsDown, Loader } from "lucide-react";
+
+import { Loader } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 const SubjectCreate = () => {
-  const [departmentOpen, setDepartmentOpen] = useState(false);
-  const [departmentSearch, setDepartmentSearch] = useState("");
-  const [selectedDepartmentName, setSelectedDepartmentName] =
-    useState<string>("");
+  useState<string>("");
   const back = useBack();
 
   const form = useForm<BaseRecord, HttpError, SubjectFormValues>({
@@ -85,9 +72,6 @@ const SubjectCreate = () => {
     ],
   });
 
-  const departments = departmentsQuery.data?.data ?? [];
-  const departmentsLoading = departmentsQuery.isLoading;
-
   const onSubmit = async (values: SubjectFormValues) => {
     try {
       await onFinish(values);
@@ -130,82 +114,21 @@ const SubjectCreate = () => {
                   name="departmentId"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      Department <span className="text-orange-600">*</span>
-                      <Popover
-                        open={departmentOpen}
-                        onOpenChange={setDepartmentOpen}
-                      >
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              role="combobox"
-                              aria-required={true}
-                              className={cn(
-                                "w-full justify-between font-normal",
-                                !field.value && "text-muted-foreground",
-                              )}
-                              disabled={departmentsLoading}
-                            >
-                              {field.value
-                                ? selectedDepartmentName ||
-                                  (departmentsOptions.find(
-                                    (opt) => opt.value === field.value,
-                                  )?.label ??
-                                    "Select department")
-                                : "Select department"}
-                              <ChevronsDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[calc(var(--radix-popover-trigger-width)*0.8)] p-0">
-                          <Command shouldFilter={false}>
-                            {" "}
-                            {/* shouldFilter={false} lets Refine/server handle the filtering */}
-                            <CommandInput
-                              className="w-full text-center placeholder:text-center"
-                              placeholder="Search department..."
-                              value={departmentSearch}
-                              onValueChange={(val) => {
-                                onSearchDepartment(val);
-                                setDepartmentSearch(val);
-                              }}
-                            />
-                            <CommandList>
-                              <CommandEmpty className="text-center">
-                                No subject found.
-                              </CommandEmpty>
-                              <CommandGroup>
-                                {departments.map(
-                                  ({ name: label, id: value }) => (
-                                    <CommandItem
-                                      key={value}
-                                      value={value.toString()}
-                                      className="flex gap-2 cursor-pointer items-center w-full hover:bg-accent hover:text-accent-foreground px-2"
-                                      onSelect={() => {
-                                        field.onChange(Number(value));
-                                        setSelectedDepartmentName(label);
-                                        setDepartmentOpen(false);
-                                      }}
-                                    >
-                                      {label}
-                                      <Check
-                                        className={cn(
-                                          "mr-2 h-4 w-4 ml-auto",
-                                          value === field.value
-                                            ? "opacity-100"
-                                            : "opacity-0",
-                                        )}
-                                      />
-                                    </CommandItem>
-                                  ),
-                                )}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
+                      <FormLabel>Department</FormLabel>
+                      <FormControl>
+                        <SearchableSelect
+                          variant="form"
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          options={departmentsOptions} // e.g. [{ label: "Math (MATH101)", value: 1 }]
+                          placeholder="Select subject"
+                          searchPlaceholder="Search subject..."
+                          emptyMessage="No subject found."
+                          isLoading={departmentsQuery.isLoading}
+                          onSearch={onSearchDepartment}
+                          className="w-full"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
