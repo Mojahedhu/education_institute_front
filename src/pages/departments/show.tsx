@@ -254,6 +254,7 @@ const DepartmentShow = () => {
     columns: subjectColumns,
     refineCoreProps: {
       resource: `departments/${departmentId}/subjects`,
+      syncWithLocation: false,
       pagination: {
         pageSize: 10,
         mode: "server",
@@ -265,6 +266,7 @@ const DepartmentShow = () => {
     columns: classColumns,
     refineCoreProps: {
       resource: `departments/${departmentId}/classes`,
+      syncWithLocation: false,
       pagination: {
         pageSize: 10,
         mode: "server",
@@ -276,6 +278,7 @@ const DepartmentShow = () => {
     columns: userColumns,
     refineCoreProps: {
       resource: `departments/${departmentId}/users`,
+      syncWithLocation: false,
       pagination: {
         pageSize: 10,
         mode: "server",
@@ -296,6 +299,7 @@ const DepartmentShow = () => {
     columns: userColumns,
     refineCoreProps: {
       resource: `departments/${departmentId}/users`,
+      syncWithLocation: false,
       pagination: {
         pageSize: 10,
         mode: "server",

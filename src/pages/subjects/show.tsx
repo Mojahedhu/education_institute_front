@@ -155,6 +155,7 @@ const SubjectsShow = () => {
     columns: classColumns,
     refineCoreProps: {
       resource: `subjects/${subjectId}/classes`,
+      syncWithLocation: false,
       pagination: {
         pageSize: 10,
         mode: "server",
@@ -166,6 +167,7 @@ const SubjectsShow = () => {
     columns: userColumns,
     refineCoreProps: {
       resource: `subjects/${subjectId}/users`,
+      syncWithLocation: false,
       pagination: {
         pageSize: 10,
         mode: "server",
@@ -186,6 +188,7 @@ const SubjectsShow = () => {
     columns: userColumns,
     refineCoreProps: {
       resource: `subjects/${subjectId}/users`,
+      syncWithLocation: false,
       pagination: {
         pageSize: 10,
         mode: "server",

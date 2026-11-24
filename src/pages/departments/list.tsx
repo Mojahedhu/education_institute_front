@@ -9,7 +9,7 @@ import { DepartmentListItem } from "@/types";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const DepartmentsList = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -111,16 +111,21 @@ const DepartmentsList = () => {
       filters: {
         permanent: [...searchFilters],
       },
-      sorters: {
-        initial: [
-          {
-            field: "id",
-            order: "desc",
-          },
-        ],
-      },
+      // sorters: {
+      //   initial: [
+      //     {
+      //       field: "id",
+      //       order: "desc",
+      //     },
+      //   ],
+      // },
     },
   });
+
+  useEffect(() => {
+    departmentsTable.refineCore.setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
 
   return (
     <ListView>
@@ -138,7 +143,10 @@ const DepartmentsList = () => {
               placeholder="Search by name or code..."
               className="pl-10 w-full"
               value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
+              onChange={(event) => {
+                setSearchQuery(event.target.value);
+                departmentsTable.refineCore.setCurrentPage(1);
+              }}
             />
           </div>
           <CreateButton resource="departments" />

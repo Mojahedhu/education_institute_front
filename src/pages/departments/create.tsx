@@ -46,10 +46,9 @@ const DepartmentsCreate = () => {
   const onSubmit = async (values: DepartmentFormValues) => {
     try {
       await onFinish(values);
-      toast.success(
-        `Department ${form.getValues("name")} added successfully 🎉`,
-        { richColors: true },
-      );
+      toast.success(`Department ${values.name} added successfully 🎉`, {
+        richColors: true,
+      });
     } catch (error) {
       console.error("Error creating department:", error);
       toast.error("Creating department failed, please try again", {
