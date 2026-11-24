@@ -26,7 +26,7 @@ import { Toaster } from "./components/refine-ui/notification/toaster";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import "./App.css";
 import Dashboard from "./pages/dashboard";
-import { BookOpen, Building2, GraduationCap, Home } from "lucide-react";
+import { BookOpen, Building2, GraduationCap, Home, Users } from "lucide-react";
 import { SubjectCreate, SubjectsList, SubjectsShow } from "./pages/subjects";
 import { ClassesCreate, ClassesList, ClassesShow } from "./pages/classes";
 import { authProvider } from "./providers/auth";
@@ -37,6 +37,7 @@ import {
   DepartmentShow,
   DepartmentsList,
 } from "./pages/departments";
+import { FacultyList, FacultyShow } from "./pages/faculty";
 
 const APP_TITLE = {
   text: "Education Institute",
@@ -86,6 +87,15 @@ function App() {
                   meta: {
                     label: "Departments",
                     icon: <Building2 />,
+                  },
+                },
+                {
+                  name: "users",
+                  list: "/faculty",
+                  show: "/faculty/show/:id",
+                  meta: {
+                    label: "Faculty",
+                    icon: <Users />,
                   },
                 },
                 {
@@ -143,6 +153,11 @@ function App() {
                       <Route index element={<DepartmentsList />} />
                       <Route path="create" element={<DepartmentsCreate />} />
                       <Route path="show/:id" element={<DepartmentShow />} />
+                    </Route>
+
+                    <Route path="faculty">
+                      <Route index element={<FacultyList />} />
+                      <Route path="show/:id" element={<FacultyShow />} />
                     </Route>
 
                     <Route path="/classes">
