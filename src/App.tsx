@@ -26,12 +26,17 @@ import { Toaster } from "./components/refine-ui/notification/toaster";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import "./App.css";
 import Dashboard from "./pages/dashboard";
-import { BookOpen, GraduationCap, Home } from "lucide-react";
+import { BookOpen, Building2, GraduationCap, Home } from "lucide-react";
 import { SubjectCreate, SubjectsList, SubjectsShow } from "./pages/subjects";
 import { ClassesCreate, ClassesList, ClassesShow } from "./pages/classes";
 import { authProvider } from "./providers/auth";
 import ResetPassword from "./pages/reset-password";
 import { ErrorBoundary } from "./components/refine-ui/layout/error-boundary";
+import {
+  DepartmentsCreate,
+  DepartmentShow,
+  DepartmentsList,
+} from "./pages/departments";
 
 const APP_TITLE = {
   text: "Education Institute",
@@ -71,6 +76,16 @@ function App() {
                   meta: {
                     label: "Subjects",
                     icon: <BookOpen />,
+                  },
+                },
+                {
+                  name: "departments",
+                  list: "/departments",
+                  show: "/departments/show/:id",
+                  create: "/departments/create",
+                  meta: {
+                    label: "Departments",
+                    icon: <Building2 />,
                   },
                 },
                 {
@@ -123,6 +138,13 @@ function App() {
                       <Route path="create" element={<SubjectCreate />} />
                       <Route path="show/:id" element={<SubjectsShow />} />
                     </Route>
+
+                    <Route path="departments">
+                      <Route index element={<DepartmentsList />} />
+                      <Route path="create" element={<DepartmentsCreate />} />
+                      <Route path="show/:id" element={<DepartmentShow />} />
+                    </Route>
+
                     <Route path="/classes">
                       <Route index element={<ClassesList />} />
                       <Route
