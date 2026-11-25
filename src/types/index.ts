@@ -225,3 +225,25 @@ export type SignUpPayload = {
 };
 
 // ----------------------------------
+
+// ------------------------------------
+// Faculty
+export type FacultyDepartment = {
+  id: number;
+  name: string;
+  code?: string | null;
+  description?: string | null;
+};
+
+export type FacultySubject = {
+  id: number;
+  name: string;
+  code?: string | null;
+  description?: string | null;
+  department?: {
+    id: number;
+    name: string;
+    code?: string | null;
+  } | null;
+};
+// ------------------------
