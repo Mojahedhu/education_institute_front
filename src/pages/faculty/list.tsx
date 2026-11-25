@@ -83,16 +83,6 @@ const FacultyList = () => {
     [],
   );
 
-  const searchFilters = debouncedSearchQuery
-    ? [
-        {
-          field: "search",
-          operator: "contains" as const,
-          value: searchQuery,
-        },
-      ]
-    : [];
-
   const facultyTable = useTable<User>({
     columns: facultyColumns,
 
@@ -111,7 +101,6 @@ const FacultyList = () => {
             operator: "eq" as const,
             value: "teacher",
           },
-          ...searchFilters,
         ],
       },
       //   sorters: {
@@ -124,6 +113,28 @@ const FacultyList = () => {
       //   },
     },
   });
+
+  const { setFilters, setCurrentPage } = facultyTable.refineCore;
+
+  useEffect(() => {
+    setFilters(
+      debouncedSearchQuery
+        ? [
+            {
+              field: "search",
+              operator: "contains",
+              value: debouncedSearchQuery,
+            },
+          ]
+        : [],
+      "replace",
+    );
+  }, [debouncedSearchQuery, setFilters]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchQuery]);
 
   return (
     <ListView>
