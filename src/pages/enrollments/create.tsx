@@ -52,7 +52,7 @@ const EnrollmentCreate = () => {
     ],
   });
 
-  const classes = classesQueryS.data?.data ?? [];
+  // const classes = classesQueryS.data?.data ?? [];
   const classesLoading = classesQueryS.isLoading;
 
   const form = useForm<EnrollFormValues>({
@@ -86,7 +86,7 @@ const EnrollmentCreate = () => {
     isPending ||
     classesLoading ||
     !currentUser?.id ||
-    !classes.length ||
+    // !classes.length ||
     !selectedClassId;
 
   return (
@@ -125,18 +125,20 @@ const EnrollmentCreate = () => {
                       <FormLabel>
                         Class <span className="text-orange-600">*</span>
                       </FormLabel>
-                      <SearchableSelect
-                        variant="form"
-                        value={field.value}
-                        onValueChange={field.onChange}
-                        options={classOptions} // e.g. [{ label: "Math (MATH101)", value: 1 }]
-                        placeholder="Select class"
-                        searchPlaceholder="Search class..."
-                        emptyMessage="No class found."
-                        isLoading={classesQueryS.isLoading}
-                        onSearch={onSearchClasses}
-                        className="w-full"
-                      />
+                      <FormControl>
+                        <SearchableSelect
+                          variant="form"
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          options={classOptions} // e.g. [{ label: "Math (MATH101)", value: 1 }]
+                          placeholder="Select class"
+                          searchPlaceholder="Search class..."
+                          emptyMessage="No class found."
+                          isLoading={classesQueryS.isLoading}
+                          onSearch={onSearchClasses}
+                          className="w-full"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

@@ -36,7 +36,7 @@ const CustomBreadcrumb = ({ prevUrl, curUrl }: CustomBreadcrumbPops) => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink asChild>
-                <Link to={prevUrl}>{prevUrlPath}</Link>
+                <Link to={`/${prevUrl}`}>{prevUrlPath}</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
           </>
