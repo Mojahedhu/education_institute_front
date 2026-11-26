@@ -26,9 +26,21 @@ import { Toaster } from "./components/refine-ui/notification/toaster";
 import { ThemeProvider } from "./components/refine-ui/theme/theme-provider";
 import "./App.css";
 import Dashboard from "./pages/dashboard";
-import { BookOpen, Building2, GraduationCap, Home, Users } from "lucide-react";
+import {
+  BookOpen,
+  Building2,
+  ClipboardCheck,
+  GraduationCap,
+  Home,
+  Users,
+} from "lucide-react";
 import { SubjectCreate, SubjectsList, SubjectsShow } from "./pages/subjects";
-import { ClassesCreate, ClassesList, ClassesShow } from "./pages/classes";
+import {
+  ClassesCreate,
+  ClassesList,
+  ClassesShow,
+  EnrollmentJoin,
+} from "./pages/classes";
 import { authProvider } from "./providers/auth";
 import ResetPassword from "./pages/reset-password";
 import { ErrorBoundary } from "./components/refine-ui/layout/error-boundary";
@@ -38,6 +50,11 @@ import {
   DepartmentsList,
 } from "./pages/departments";
 import { FacultyList, FacultyShow } from "./pages/faculty";
+import {
+  EnrollmentsList,
+  EnrollmentCreate,
+  EnrollmentConfirm,
+} from "./pages/enrollments";
 
 const APP_TITLE = {
   text: "Education Institute",
@@ -99,10 +116,20 @@ function App() {
                   },
                 },
                 {
+                  name: "enrollments",
+                  list: "/enrollments",
+                  create: "/enrollments/create",
+                  meta: {
+                    label: "Enrollments",
+                    icon: <ClipboardCheck />,
+                  },
+                },
+                {
                   name: "classes",
                   list: "/classes",
-                  create: "classes/create",
-                  show: "classes/show/:id",
+                  create: "/classes/create",
+                  show: "/classes/show/:id",
+                  // join: "/classes/show/:id/join",
                   meta: {
                     label: "Classes",
                     icon: <GraduationCap />,
@@ -143,7 +170,7 @@ function App() {
                     }
                   >
                     <Route path="/" element={<Dashboard />} />
-                    <Route path="/subjects">
+                    <Route path="subjects">
                       <Route index element={<SubjectsList />} />
                       <Route path="create" element={<SubjectCreate />} />
                       <Route path="show/:id" element={<SubjectsShow />} />
@@ -160,15 +187,20 @@ function App() {
                       <Route path="show/:id" element={<FacultyShow />} />
                     </Route>
 
-                    <Route path="/classes">
+                    <Route path="enrollments">
+                      <Route index element={<EnrollmentsList />} />
+                      <Route path="create" element={<EnrollmentCreate />} />
+                      {/* <Route path="join" element={<EnrollmentJoin />} /> */}
+                      <Route path="confirm" element={<EnrollmentConfirm />} />
+                    </Route>
+
+                    <Route path="classes">
                       <Route index element={<ClassesList />} />
+                      <Route path="create" element={<ClassesCreate />} />
+                      <Route path="show/:id" element={<ClassesShow />} />
                       <Route
-                        path="/classes/create"
-                        element={<ClassesCreate />}
-                      />
-                      <Route
-                        path="/classes/show/:id"
-                        element={<ClassesShow />}
+                        path="show/:id/join"
+                        element={<EnrollmentJoin />}
                       />
                     </Route>
                   </Route>

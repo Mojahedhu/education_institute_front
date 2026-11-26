@@ -1,4 +1,6 @@
 import ClassesCreate from "./create";
 import ClassesList from "./list";
 import ClassesShow from "./show";
-export { ClassesList, ClassesCreate, ClassesShow };
+import EnrollmentJoin from "./join";
+
+export { ClassesList, ClassesCreate, ClassesShow, EnrollmentJoin };

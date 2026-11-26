@@ -124,15 +124,15 @@ export const classSchema = z.object({
   schedules: z.array(scheduleSchema).optional(),
 });
 
-export const enrollmentSchema = z.object({
-  classId: z.coerce
-    .number({
-      required_error: "Class ID is required",
-      invalid_type_error: "Class ID is required",
-    })
-    .min(1, "Class ID is required"),
-  studentId: z.string().min(1, "Student ID is required"),
-});
+// export const enrollmentSchema = z.object({
+//   classId: z.coerce
+//     .number({
+//       required_error: "Class ID is required",
+//       invalid_type_error: "Class ID is required",
+//     })
+//     .min(1, "Class ID is required"),
+//   studentId: z.string().min(1, "Student ID is required"),
+// });
 
 // ................................................
 // Department schemas
@@ -146,3 +146,37 @@ export const departmentSchema = z.object({
 
 export type DepartmentFormValues = z.infer<typeof departmentSchema>;
 // ...........................................
+// Enrollment schemas
+export const enrollSchema = z.object({
+  classId: z.coerce.number().min(1, "Class is required"),
+});
+
+export type EnrollmentDetails = {
+  id: number;
+  class?: {
+    id: number;
+    name: string;
+  };
+  subject?: {
+    id: number;
+    name: string;
+  };
+  department?: {
+    id: number;
+    name: string;
+  };
+  teacher?: {
+    id: string;
+    name: string;
+    email: string;
+  };
+};
+
+export const joinSchema = z.object({
+  inviteCode: z.string().min(3, "Invite code is required"),
+});
+
+export type JoinFormValues = z.infer<typeof joinSchema>;
+
+export type EnrollFormValues = z.infer<typeof enrollSchema>;
+// .....................................
