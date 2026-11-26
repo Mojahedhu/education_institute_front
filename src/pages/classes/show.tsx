@@ -4,27 +4,35 @@ import {
   ShowViewHeader,
 } from "@/components/refine-ui/views/show-view";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getImageBrightness, getInitials } from "@/lib/utils";
+import { getInitials } from "@/lib/utils";
 import { ClassDetails, ClassUser } from "@/types";
 import { useShow } from "@refinedev/core";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router";
+
+import { useNavigate, useParams } from "react-router";
 import { AdvancedImage } from "@cloudinary/react";
 import { bannerPhoto } from "@/lib/cloudinary";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/refine-ui/data-table/data-table";
+import { useMemo } from "react";
 
 const ClassesShow = () => {
   // const [imgError, setImgError] = useState(false);
   // const [theme, setTheme] = useState<"dark" | "light">("dark");
   const { id } = useParams();
+  const navigate = useNavigate();
   const classId = id ?? "";
 
-  const { query } = useShow<ClassDetails>({ resource: "classes" });
+  const { query } = useShow<ClassDetails>({
+    resource: "classes",
+    queryOptions: {
+      enabled: !!classId,
+    },
+  });
 
   const classDetails = query.data?.data;
 
@@ -82,7 +90,7 @@ const ClassesShow = () => {
         id: "details",
         size: 140,
         header: () => <p className="column-title">Details</p>,
-        cell: ({ row }) => {
+        cell: ({ row }) => (
           <ShowButton
             resource="users"
             recordItemId={row.original.id}
@@ -90,19 +98,33 @@ const ClassesShow = () => {
             size={"sm"}
           >
             View
-          </ShowButton>;
-        },
+          </ShowButton>
+        ),
       },
     ],
     [],
   );
 
-  //   const studentsTable = useTable({
-  //     columns: studentColumns,
-  //     refineCoreProps: {
-  //       resource: `classes/${classId}/users`,
-  //     },
-  //   });
+  const studentsTable = useTable({
+    columns: studentColumns,
+    refineCoreProps: {
+      resource: `classes/${classId}/users`,
+      syncWithLocation: false, // Prevents URL query params (?pageSize=10&currentPage=1) from conflicting with pageSize: 3
+      pagination: {
+        pageSize: 3,
+        mode: "server",
+      },
+      filters: {
+        permanent: [
+          {
+            field: "role",
+            operator: "eq",
+            value: "student",
+          },
+        ],
+      },
+    },
+  });
 
   if (query.isLoading || query.isError || !classDetails) {
     return (
@@ -226,9 +248,22 @@ const ClassesShow = () => {
             <li>Paste the code and click &quot;Join&quot;</li>
           </ol>
         </div>
-        <Button size="lg" className="w-full">
+        <Button
+          size="lg"
+          className="w-full"
+          onClick={() => navigate(`/classes/show/${classId}/join`)}
+        >
           Join Class
         </Button>
+      </Card>
+
+      <Card className="hover:shadow-md transition-shadow">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Enrolled Students</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable table={studentsTable} paginationVariant="simple" />
+        </CardContent>
       </Card>
     </ShowView>
   );

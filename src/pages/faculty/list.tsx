@@ -129,7 +129,8 @@ const FacultyList = () => {
         : [],
       "replace",
     );
-  }, [debouncedSearchQuery, setFilters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchQuery]);
 
   useEffect(() => {
     setCurrentPage(1);
